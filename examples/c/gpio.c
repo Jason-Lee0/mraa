@@ -20,8 +20,8 @@
 #include "mraa/gpio.h"
 
 /* gpio declaration */
-#define GPIO_PIN_1 23
-#define GPIO_PIN_2 24
+#define GPIO_PIN_1 7
+#define GPIO_PIN_2 8
 
 volatile sig_atomic_t flag = 1;
 
@@ -35,8 +35,12 @@ sig_handler(int signum)
 }
 
 int
-main(void)
+main(int argc, char *argv[])
 {
+    int gpio_pin1, gpio_pin2;
+    gpio_pin1 = (argc >= 2)?atoi(argv[1]):GPIO_PIN_1;
+    gpio_pin2 = (argc >= 3)?atoi(argv[2]):GPIO_PIN_2;
+    printf("Toggle GPIO pin %d and pin %d\n", gpio_pin1, gpio_pin2);
     mraa_result_t status = MRAA_SUCCESS;
     mraa_gpio_context gpio_1, gpio_2;
 
@@ -48,17 +52,17 @@ main(void)
 
     //! [Interesting]
     /* initialize GPIO pin */
-    gpio_1 = mraa_gpio_init(GPIO_PIN_1);
+    gpio_1 = mraa_gpio_init(gpio_pin1);
     if (gpio_1 == NULL) {
-        fprintf(stderr, "Failed to initialize GPIO %d\n", GPIO_PIN_1);
+        fprintf(stderr, "Failed to initialize GPIO %d\n", gpio_pin1);
         mraa_deinit();
         return EXIT_FAILURE;
     }
 
     /* initialize GPIO pin */
-    gpio_2 = mraa_gpio_init(GPIO_PIN_2);
+    gpio_2 = mraa_gpio_init(gpio_pin2);
     if (gpio_2 == NULL) {
-        fprintf(stderr, "Failed to initialize GPIO %d\n", GPIO_PIN_2);
+        fprintf(stderr, "Failed to initialize GPIO %d\n", gpio_pin2);
         mraa_deinit();
         return EXIT_FAILURE;
     }
