@@ -24,6 +24,7 @@
 #include "x86/intel_joule_expansion.h"
 #include "x86/iei_tank.h"
 #include "x86/intel_adlink_lec_al.h"
+#include "x86/roscube_i.h"
 
 mraa_platform_t
 mraa_x86_platform()
@@ -38,6 +39,8 @@ mraa_x86_platform()
     int fd;
 
     if (fh != NULL) {
+        // TODO: we should find a way to check our hardware
+        #if 0
         if (getline(&line, &len, fh) != -1) {
             // Sanitize input by terminating at any of possible end of line chars
             line[strcspn(line, "\r\n")] = 0;
@@ -104,6 +107,10 @@ mraa_x86_platform()
             }
             free(line);
         }
+        #else
+        platform_type = MRAA_ADLINK_ROSCUBE_I;
+        plat = mraa_roscube_i();
+        #endif
         fclose(fh);
     } else {
         fh = fopen("/proc/cmdline", "r");

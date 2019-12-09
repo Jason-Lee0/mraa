@@ -56,6 +56,7 @@ set (mraa_LIB_X86_SRCS_NOAUTO
   ${PROJECT_SOURCE_DIR}/src/x86/intel_joule_expansion.c
   ${PROJECT_SOURCE_DIR}/src/x86/iei_tank.c
   ${PROJECT_SOURCE_DIR}/src/x86/adlink-ipi.c
+  ${PROJECT_SOURCE_DIR}/src/x86/roscube_i.c
 )
 
 message (STATUS "INFO - Adding support for platform ${MRAAPLATFORMFORCE}")
