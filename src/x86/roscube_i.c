@@ -41,11 +41,14 @@
 #define PLATFORM_NAME "ROSCUBE-I"
 
 #define MRAA_ROSCUBE_GPIOCOUNT 20
+#define MRAA_ROSCUBE_UARTCOUNT 4
 #define MAX_SIZE 64
 #define POLL_TIMEOUT
 
 static volatile int base1, base2, _fd;
 static mraa_gpio_context gpio;
+static char* uart_name[MRAA_ROSCUBE_UARTCOUNT] = {"COM1", "COM2", "COM3", "COM4"};
+static char* uart_path[MRAA_ROSCUBE_UARTCOUNT] = {"/dev/ttyS0", "/dev/ttyS1", "/dev/ttyS2", "/dev/ttyS3"};
 
 // utility function to setup pin mapping of boards
 static mraa_result_t mraa_roscube_set_pininfo(mraa_board_t* board, int mraa_index, char* name,
@@ -86,6 +89,20 @@ static mraa_result_t mraa_roscube_get_pin_index(mraa_board_t* board, char* name,
     syslog(LOG_CRIT, "ROSCUBE I: Failed to find pin name %s", name);
 
     return MRAA_ERROR_INVALID_RESOURCE;
+}
+
+static mraa_result_t mraa_roscube_init_uart(mraa_board_t* board, int index)
+{
+    if (index >= MRAA_ROSCUBE_UARTCOUNT)
+        return MRAA_ERROR_INVALID_RESOURCE;
+    board->uart_dev[index].index = index;
+    board->uart_dev[index].device_path = uart_path[index];
+    board->uart_dev[index].name = uart_name[index];
+    board->uart_dev[index].tx = -1;
+    board->uart_dev[index].rx = -1;
+    board->uart_dev[index].cts = -1;
+    board->uart_dev[index].rts = -1;
+    return MRAA_SUCCESS;
 }
 
 mraa_board_t* mraa_roscube_i()
@@ -204,16 +221,12 @@ mraa_board_t* mraa_roscube_i()
     mraa_roscube_set_pininfo(b, 43, "GND",        (mraa_pincapabilities_t){ -1, 0, 0, 0, 0, 0, 0, 0 }, -1);
     mraa_roscube_set_pininfo(b, 44, "GND",        (mraa_pincapabilities_t){ -1, 0, 0, 0, 0, 0, 0, 0 }, -1);
 
-#if 0 // TODO: UART, SPI
-    // Configure UART #1 (default)
-    b->uart_dev_count = 1;
-
-    mraa_roscube_get_pin_index(b, "UART_RXD",  &(b->uart_dev[0].rx));
-    mraa_roscube_get_pin_index(b, "UART_TXD",  &(b->uart_dev[0].tx));
-    b->uart_dev[0].device_path = "/dev/ttyS4";
-
+    b->uart_dev_count = MRAA_ROSCUBE_UARTCOUNT;
+    for (int i = 0; i < MRAA_ROSCUBE_UARTCOUNT; i++)
+        mraa_roscube_init_uart(b, i);
     b->def_uart_dev = 0;
 
+#if 0 // TODO: SPI
     // Configure SPI #0 CS1
     b->spi_bus_count = 0;
     b->spi_bus[b->spi_bus_count].bus_id = 1;

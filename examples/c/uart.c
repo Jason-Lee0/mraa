@@ -37,6 +37,8 @@ main(int argc, char** argv)
 {
     mraa_uart_context uart;
     char buffer[] = "Hello Mraa!";
+    int port_num = (argc >= 2)?atoi(argv[1]):UART;
+    printf("Now connect to port_num = %d\n", port_num);
 
     /* install signal handler */
     signal(SIGINT, sig_handler);
@@ -46,7 +48,7 @@ main(int argc, char** argv)
 
     //! [Interesting]
     /* initialize UART */
-    uart = mraa_uart_init(UART);
+    uart = mraa_uart_init(port_num);
     if (uart == NULL) {
         fprintf(stderr, "Failed to initialize UART\n");
         goto err_exit;
