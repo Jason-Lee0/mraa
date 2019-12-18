@@ -1,7 +1,7 @@
-ADLINK ROScube-I ARM
+ADLINK ROScube-X ARM
 ============
 
-* ADLINK ROScube-I ARM
+* ADLINK ROScube-X ARM
 
   ROS 2-enabled robotic controller based on NVIDIA® Jetson AGX Xavier™ module
 
@@ -18,16 +18,16 @@ ADLINK ROScube-I ARM
 |                              | Not Used  |      1      |      2      | Not Used  |                              |
 |                              | Not Used  |      3      |      4      | Not Used  |                              |
 |                              | Not Used  |      5      |      6      | Not Used  |                              |
-|             127              |   GPIO0   |      7      |      8      |   GPIO1   |             128              |
-|             129              |   GPIO2   |      9      |     10      |   GPIO3   |             130              |
-|             131              |   GPIO4   |     11      |     12      |   GPIO5   |             132              |
-|             133              |   GPIO6   |     13      |     14      |   GPIO7   |             134              |
-|             135              |   GPIO8   |     15      |     16      |   GPIO9   |             136              |
-|             137              |   GPIO10  |     17      |     18      |   GPIO11  |             138              |
-|             139              |   GPIO12  |     19      |     20      |   GPIO13  |             140              |
-|             141              |   GPIO14  |     21      |     22      |   GPIO15  |             142              |
-|             119              |   GPIO16  |     23      |     24      |   GPIO17  |             120              |
-|             121              |   GPIO18  |     25      |     26      |   GPIO19  |             123              |
+|             216              |   GPIO0   |      7      |      8      |   GPIO1   |             217              |
+|             218              |   GPIO2   |      9      |     10      |   GPIO3   |             219              |
+|             220              |   GPIO4   |     11      |     12      |   GPIO5   |             221              |
+|             222              |   GPIO6   |     13      |     14      |   GPIO7   |             223              |
+|             224              |   GPIO8   |     15      |     16      |   GPIO9   |             225              |
+|             226              |   GPIO10  |     17      |     18      |   GPIO11  |             227              |
+|             228              |   GPIO12  |     19      |     20      |   GPIO13  |             229              |
+|             230              |   GPIO14  |     21      |     22      |   GPIO15  |             231              |
+|             232              |   GPIO16  |     23      |     24      |   GPIO17  |             233              |
+|             234              |   GPIO18  |     25      |     26      |   GPIO19  |             235              |
 |                              |   CAN_TX  |     27      |     28      | SPI0_SCK  |                              |
 |                              |   CAN_RX  |     29      |     30      | SPI0_MISO |                              |
 |                              |   CANH    |     31      |     32      | SPI0_MISO |                              |
