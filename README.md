@@ -37,7 +37,7 @@ X86
 * [Intel Joule](../master/docs/joule.md)
 * [IEI Tank](../master/docs/iei-tank.md)
 * [ADLINK IPi-SMARC X86](../master/docs/adlink_ipi_x86.md)
-* [ADLINK ROScube-I](../master/docs/adlink_roscube_i.md)
+* [ADLINK ROScube-I](../roscube_series/docs/adlink_roscube_i.md)
 
 ARM
 ---
@@ -47,6 +47,7 @@ ARM
 * [phyBOARD-Wega](../master/docs/phyboard-wega.md)
 * [96Boards](../master/docs/96boards.md)
 * [ADLINK IPi-SMARC ARM](../master/docs/adlink_ipi_arm.md)
+* [ADLINK ROScube-X](../roscube_series/docs/adlink_roscube_x.md)
 
 MIPS
 ---
