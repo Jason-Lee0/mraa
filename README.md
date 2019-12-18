@@ -37,6 +37,7 @@ X86
 * [Intel Joule](../master/docs/joule.md)
 * [IEI Tank](../master/docs/iei-tank.md)
 * [ADLINK IPi-SMARC X86](../master/docs/adlink_ipi_x86.md)
+* [ADLINK ROScube-I](../master/docs/adlink_roscube_i.md)
 
 ARM
 ---
