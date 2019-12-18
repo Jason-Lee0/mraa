@@ -18,6 +18,7 @@
 #include "arm/raspberry_pi.h"
 #include "arm/adlink_ipi.h"
 #include "mraa_internal.h"
+#include "arm/roscube_x.h"
 
 
 mraa_platform_t
@@ -25,6 +26,7 @@ mraa_arm_platform()
 {
     mraa_platform_t platform_type = MRAA_UNKNOWN_PLATFORM;
     size_t len = 100;
+#if 0
     char* line = malloc(len);
     FILE* fh = fopen("/proc/cpuinfo", "r");
 
@@ -69,6 +71,9 @@ mraa_arm_platform()
         fclose(fh);
     }
     free(line);
+#else
+    platform_type = MRAA_ADLINK_ROSCUBE_X;
+#endif
 
     /* Get compatible string from Device tree for boards that dont have enough info in /proc/cpuinfo
      */
@@ -120,9 +125,12 @@ mraa_arm_platform()
         case MRAA_DE_NANO_SOC:
             plat = mraa_de_nano_soc();
             break;
-	case MRAA_ADLINK_IPI:
-	    plat = mraa_adlink_ipi();
-	    break;
+	    case MRAA_ADLINK_IPI:
+	        plat = mraa_adlink_ipi();
+	        break;
+	    case MRAA_ADLINK_ROSCUBE_X:
+	        plat = mraa_roscube_x();
+	        break;
         default:
             plat = NULL;
             syslog(LOG_ERR, "Unknown Platform, currently not supported by MRAA");

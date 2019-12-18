@@ -67,6 +67,7 @@ typedef enum {
     MRAA_ADLINK_LEC_AL = 22,        /**< Adlink LEC-AL*/
     MRAA_ADLINK_LEC_AL_AI = 23,        /**< Adlink LEC-AL*/
     MRAA_ADLINK_ROSCUBE_I = 24,     /**< Adlink ROSCube I*/
+    MRAA_ADLINK_ROSCUBE_X = 25,     /**< Adlink ROSCube X*/
     // USB platform extenders start at 256
     MRAA_FTDI_FT4222 = 256,         /**< FTDI FT4222 USB to i2c bridge */
 
