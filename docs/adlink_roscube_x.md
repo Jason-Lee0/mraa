@@ -30,7 +30,7 @@ ADLINK ROScube-X ARM
 |             234              |   GPIO18  |     25      |     26      |   GPIO19  |             235              |
 |                              |   CAN_TX  |     27      |     28      | SPI0_SCK  |                              |
 |                              |   CAN_RX  |     29      |     30      | SPI0_MISO |                              |
-|                              |   CANH    |     31      |     32      | SPI0_MISO |                              |
+|                              |   CANH    |     31      |     32      | SPI0_MOSI |                              |
 |                              |   CANL    |     33      |     34      | SPI0_CS   |                              |
 |                              |   PWM     |     35      |     36      | I2C0_SDA  |                              |
 |                              |   5V DC   |     37      |     38      | I2C0_SCL  |                              |
