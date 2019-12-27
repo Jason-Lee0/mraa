@@ -43,9 +43,15 @@ ADLINK ROScube-I x86
 * Before using MRAA on Ubuntu 18.04, please follow up the below instructions to insert the following drivers first and configure I2C devices:
 
     ```
-     $ sudo modprobe i2c_i801
-     $ sudo modprobe gpio-pca953x
+     $ modprobe -r lm63
+     $ modprobe i2c_i801
+     $ modprobe gpio-pca953x
      $ echo "pca9535 0x21" > /sys/bus/i2c/devices/i2c-7/new_device
      $ echo "pca9534 0x27" > /sys/bus/i2c/devices/i2c-7/new_device
+     $ modprobe lm63
     ```
 
+* ROScube-I supports the following functions in MRAA currently:
+  * GPIO
+  * UART
+  * PWM
