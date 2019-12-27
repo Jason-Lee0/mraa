@@ -37,11 +37,13 @@
 #include "gpio/gpio_chardev.h"
 
 #define SYSFS_CLASS_GPIO "/sys/class/gpio"
+#define SYSFS_CLASS_PWM "/sys/class/hwmon/hwmon3/pwm1"
 
 #define PLATFORM_NAME "ROSCUBE-I"
 
 #define MRAA_ROSCUBE_GPIOCOUNT 20
 #define MRAA_ROSCUBE_UARTCOUNT 4
+#define MRAA_ROSCUBE_PWMCOUNT  1
 #define MAX_SIZE 64
 #define POLL_TIMEOUT
 
@@ -105,6 +107,72 @@ static mraa_result_t mraa_roscube_init_uart(mraa_board_t* board, int index)
     return MRAA_SUCCESS;
 }
 
+static mraa_result_t pwm_init_raw_replace(mraa_pwm_context dev, int pin)
+{
+    dev->period = 255;
+	return MRAA_SUCCESS;
+}
+
+static mraa_result_t pwm_period_replace(mraa_pwm_context dev, int period)
+{
+    // period can't be changed currently
+	return MRAA_ERROR_FEATURE_NOT_SUPPORTED;
+}
+
+static float pwm_read_replace(mraa_pwm_context dev)
+{
+    int _fd;
+    char output[MAX_SIZE];
+
+    _fd = open(SYSFS_CLASS_PWM, O_RDONLY);
+    if (_fd == -1) {
+        syslog(LOG_ERR, "%s-%d: Failed to open pwm value: %s", __func__, __LINE__, strerror(errno));
+        return 0;
+    }
+    ssize_t rb = read(_fd, output, MAX_SIZE);
+    if (rb < 0) {
+        syslog(LOG_ERR, "%s-%d: Failed to read pwm value: %s", __func__, __LINE__, strerror(errno));
+        return 0;
+    }
+    close(_fd);
+
+    char* endptr;
+    long int ret = strtol(output, &endptr, 10);
+    if ('\0' != *endptr && '\n' != *endptr) {
+        syslog(LOG_ERR, "%s-%d: Error in string conversion", __func__, __LINE__);
+        return 0;
+    } else if (ret > 255 || ret < 0) {
+        syslog(LOG_ERR, "%s-%d: Number is invalid", __func__, __LINE__);
+        return 0;
+    }
+    return (int) ret;
+}
+
+static mraa_result_t pwm_write_replace(mraa_pwm_context dev, float duty)
+{
+    int _fd;
+    char output[MAX_SIZE];
+
+    _fd = open(SYSFS_CLASS_PWM, O_RDWR);
+    if (_fd == -1) {
+        syslog(LOG_ERR, "%s-%d: Failed to open pwm value: %s", __func__, __LINE__, strerror(errno));
+		return MRAA_ERROR_INVALID_RESOURCE;
+    }
+    int size = snprintf(output, MAX_SIZE, "%d", (int)duty);
+    ssize_t wb = write(_fd, output, size);
+    if (wb < 0) {
+        syslog(LOG_ERR, "%s-%d: Failed to write pwm value: %s", __func__, __LINE__, strerror(errno));
+		return MRAA_ERROR_INVALID_RESOURCE;
+    }
+    close(_fd);
+	return MRAA_SUCCESS;
+}
+
+static mraa_result_t pwm_enable_replace(mraa_pwm_context dev, int enable)
+{
+	return MRAA_SUCCESS;
+}
+
 mraa_board_t* mraa_roscube_i()
 {
     int i, fd, i2c_bus_num;
@@ -138,14 +206,12 @@ mraa_board_t* mraa_roscube_i()
     b->adv_func->gpio_close_pre = NULL;
     b->adv_func->gpio_init_pre = NULL;
 
-#if 0 // TODO: PWM
     // initializations of pwm functions
     b->adv_func->pwm_init_raw_replace = pwm_init_raw_replace;
     b->adv_func->pwm_period_replace = pwm_period_replace;
     b->adv_func->pwm_read_replace = pwm_read_replace;
     b->adv_func->pwm_write_replace = pwm_write_replace;
     b->adv_func->pwm_enable_replace = pwm_enable_replace;
-#endif
 
     for(i = 0; i < 999; i++) {
         sprintf(buffer,"/sys/class/gpio/gpiochip%d/device/name",i);
@@ -167,14 +233,11 @@ mraa_board_t* mraa_roscube_i()
 
     syslog(LOG_NOTICE, "ROSCubeI: base1 %d base2 %d\n", base1, base2);
 
-// TODO: check PWM
-#if 0
     // Configure PWM
-    b->pwm_dev_count = 0;
-    b->pwm_default_period = 5000;
+    b->pwm_dev_count = MRAA_ROSCUBE_PWMCOUNT;
+    b->pwm_default_period = 255;
     b->pwm_max_period = 218453;
     b->pwm_min_period = 1;
-#endif
 
     mraa_roscube_set_pininfo(b, 1,  "Unused",     (mraa_pincapabilities_t){ -1, 0, 0, 0, 0, 0, 0, 0 }, -1);
     mraa_roscube_set_pininfo(b, 2,  "Unused",     (mraa_pincapabilities_t){ -1, 0, 0, 0, 0, 0, 0, 0 }, -1);
