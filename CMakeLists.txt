@@ -230,3 +230,22 @@ endif ()
 if (INSTALLTOOLS)
   add_subdirectory (tools)
 endif()
+
+# Here is cpack settings
+## Set the package type
+set(CPACK_GENERATOR "DEB")
+## Set the package version
+set(CPACK_PACKAGE_VERSION "1.0.0")
+# Set the package name
+set(CPACK_PACKAGE_NAME "neuron-library")
+# Set the installation location
+set(CPACK_SET_DESTDIR true)
+set(CPACK_INSTALL_PREFIX "/opt/neuron-library/")
+# Set where the deb is 
+set(CPACK_OUTPUT_FILE_PREFIX ${CMAKE_CURRENT_SOURCE_DIR}/build)
+# Maintainer
+set(CPACK_DEBIAN_PACKAGE_MAINTAINER "ChenYing Kuo")
+# Description
+set(CPACK_DEBIAN_PACKAGE_DESCRIPTION "Neuron Library is developed based on MRAA library.")
+# Must have
+include(CPack)
