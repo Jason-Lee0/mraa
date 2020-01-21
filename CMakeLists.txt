@@ -213,6 +213,16 @@ if (BUILDDOC)
   endif (DOXYGEN_FOUND AND DOXYGEN_VERSION VERSION_GREATER "1.8")
 endif ()
 
+# RPATH settings: must be set before add_executable
+## Don't skip RPATH for the build tree
+SET(CMAKE_SKIP_BUILD_RPATH FALSE)
+## Use RPATH while building
+SET(CMAKE_BUILD_WITH_INSTALL_RPATH TRUE)
+## Set the RPATH
+SET(CMAKE_INSTALL_RPATH "/opt/neuron-library/lib/")
+## Use RPATH while install
+SET(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
+
 add_subdirectory (src)
 if (ENABLEEXAMPLES)
   add_subdirectory (examples)
