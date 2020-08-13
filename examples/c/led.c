@@ -19,7 +19,7 @@
 #include "mraa/led.h"
 
 /* LED name */
-#define USER_LED 0
+#define USER_LED 2
 
 /* trigger type */
 #define LED_TRIGGER "heartbeat"
@@ -30,10 +30,10 @@ main(void)
     mraa_result_t status = MRAA_SUCCESS;
     mraa_led_context led;
     int val;
-
+    
     /* initialize mraa for the platform (not needed most of the time) */
     mraa_init();
-
+ 
     //! [Interesting]
     /* initialize LED */
     led = mraa_led_init(USER_LED);

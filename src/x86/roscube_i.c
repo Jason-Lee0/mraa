@@ -35,22 +35,25 @@
 #include "gpio.h"
 #include "x86/roscube_i.h"
 #include "gpio/gpio_chardev.h"
+#include "mraa/gpio.h"
 
 #define SYSFS_CLASS_GPIO "/sys/class/gpio"
-#define SYSFS_CLASS_PWM "/sys/class/hwmon/hwmon3/pwm1"
-
 #define PLATFORM_NAME "ROSCUBE-I"
 
-#define MRAA_ROSCUBE_GPIOCOUNT 20
-#define MRAA_ROSCUBE_UARTCOUNT 4
-#define MRAA_ROSCUBE_PWMCOUNT  1
+#define MRAA_ROSCUBE_GPIOCOUNT 16
+#define MRAA_ROSCUBE_UARTCOUNT 2
+#define MRAA_ROSCUBE_LEDCOUNT 6
+
 #define MAX_SIZE 64
 #define POLL_TIMEOUT
 
 static volatile int base1, base2, _fd;
+#define base1  220
+#define base2 253
+#define led_base 276
 static mraa_gpio_context gpio;
-static char* uart_name[MRAA_ROSCUBE_UARTCOUNT] = {"COM1", "COM2", "COM3", "COM4"};
-static char* uart_path[MRAA_ROSCUBE_UARTCOUNT] = {"/dev/ttyS0", "/dev/ttyS1", "/dev/ttyS2", "/dev/ttyS3"};
+static char* uart_name[MRAA_ROSCUBE_UARTCOUNT] = {"COM1", "COM2"};
+static char* uart_path[MRAA_ROSCUBE_UARTCOUNT] = {"/dev/ttyS0", "/dev/ttyS1"};
 
 // utility function to setup pin mapping of boards
 static mraa_result_t mraa_roscube_set_pininfo(mraa_board_t* board, int mraa_index, char* name,
@@ -107,71 +110,66 @@ static mraa_result_t mraa_roscube_init_uart(mraa_board_t* board, int index)
     return MRAA_SUCCESS;
 }
 
-static mraa_result_t pwm_init_raw_replace(mraa_pwm_context dev, int pin)
+int index_mapping(int index)
 {
-    dev->period = 255;
-	return MRAA_SUCCESS;
+    return index + led_base;
+}
+void rqi_led_init (int index)
+{
+    FILE* export_file;
+    FILE* led_dir_file;
+    char  export_path[64];
+    char led_path_dir[64];
+
+    index = index_mapping(index);
+    snprintf(export_path,64,SYSFS_CLASS_GPIO "/export");
+    export_file = fopen(export_path, "w");
+    fprintf(export_file, "%d",index);
+    fclose(export_file);
+
+    snprintf(led_path_dir,64,SYSFS_CLASS_GPIO "/gpio%d/direction",index);
+    led_dir_file = fopen(led_path_dir, "w");
+    fprintf(led_dir_file, "%s","out");
+    fclose(led_dir_file);
 }
 
-static mraa_result_t pwm_period_replace(mraa_pwm_context dev, int period)
+mraa_result_t rqi_led_set_bright (int index, int val)
 {
-    // period can't be changed currently
-	return MRAA_ERROR_FEATURE_NOT_SUPPORTED;
+    FILE* led_val_file;
+    char led_path_val[64];
+    index = index_mapping(index);
+    snprintf(led_path_val,64,SYSFS_CLASS_GPIO "/gpio%d/value",index);
+    led_val_file = fopen(led_path_val, "w");
+    fprintf(led_val_file,"%d",val);
+    fclose(led_val_file);
+    return MRAA_SUCCESS;
 }
 
-static float pwm_read_replace(mraa_pwm_context dev)
+mraa_result_t rqi_led_set_close(int index)
 {
-    int _fd;
-    char output[MAX_SIZE];
-
-    _fd = open(SYSFS_CLASS_PWM, O_RDONLY);
-    if (_fd == -1) {
-        syslog(LOG_ERR, "%s-%d: Failed to open pwm value: %s", __func__, __LINE__, strerror(errno));
-        return 0;
-    }
-    ssize_t rb = read(_fd, output, MAX_SIZE);
-    if (rb < 0) {
-        syslog(LOG_ERR, "%s-%d: Failed to read pwm value: %s", __func__, __LINE__, strerror(errno));
-        return 0;
-    }
-    close(_fd);
-
-    char* endptr;
-    long int ret = strtol(output, &endptr, 10);
-    if ('\0' != *endptr && '\n' != *endptr) {
-        syslog(LOG_ERR, "%s-%d: Error in string conversion", __func__, __LINE__);
-        return 0;
-    } else if (ret > 255 || ret < 0) {
-        syslog(LOG_ERR, "%s-%d: Number is invalid", __func__, __LINE__);
-        return 0;
-    }
-    return (int) ret;
+    FILE* unexport_file;
+    char  unexport_path[64];
+    index = index_mapping(index);
+    snprintf(unexport_path,64,SYSFS_CLASS_GPIO "/unexport");
+    unexport_file = fopen(unexport_path, "w");
+    fprintf(unexport_file,"%d",index);
+    fclose(unexport_file);
+    return MRAA_SUCCESS;
 }
 
-static mraa_result_t pwm_write_replace(mraa_pwm_context dev, float duty)
+int rqi_led_check_bright (int index)
 {
-    int _fd;
-    char output[MAX_SIZE];
-
-    _fd = open(SYSFS_CLASS_PWM, O_RDWR);
-    if (_fd == -1) {
-        syslog(LOG_ERR, "%s-%d: Failed to open pwm value: %s", __func__, __LINE__, strerror(errno));
-		return MRAA_ERROR_INVALID_RESOURCE;
-    }
-    int size = snprintf(output, MAX_SIZE, "%d", (int)duty);
-    ssize_t wb = write(_fd, output, size);
-    if (wb < 0) {
-        syslog(LOG_ERR, "%s-%d: Failed to write pwm value: %s", __func__, __LINE__, strerror(errno));
-		return MRAA_ERROR_INVALID_RESOURCE;
-    }
-    close(_fd);
-	return MRAA_SUCCESS;
+    FILE* led_val_file;
+    char led_path_val[64];
+    char buf[64];
+    index = index_mapping(index);
+    snprintf(led_path_val,64,SYSFS_CLASS_GPIO "/gpio%i/value",index);
+    led_val_file = fopen(led_path_val, "r");
+    fscanf(led_val_file,"%s",buf);
+    fclose(led_val_file);
+    return atoi(buf);
 }
 
-static mraa_result_t pwm_enable_replace(mraa_pwm_context dev, int enable)
-{
-	return MRAA_SUCCESS;
-}
 
 mraa_board_t* mraa_roscube_i()
 {
@@ -189,6 +187,7 @@ mraa_board_t* mraa_roscube_i()
     b->platform_name = PLATFORM_NAME;
     b->phy_pin_count = MRAA_ROSCUBE_I_PINCOUNT;
     b->gpio_count = MRAA_ROSCUBE_GPIOCOUNT;
+    b->led_dev_count = MRAA_ROSCUBE_LEDCOUNT;
     b->chardev_capable = 0;
 
     b->pins = (mraa_pininfo_t*) malloc(sizeof(mraa_pininfo_t) * MRAA_ROSCUBE_I_PINCOUNT);
@@ -205,91 +204,75 @@ mraa_board_t* mraa_roscube_i()
     b->adv_func->gpio_isr_replace = NULL;
     b->adv_func->gpio_close_pre = NULL;
     b->adv_func->gpio_init_pre = NULL;
+    b->adv_func->led_init = rqi_led_init;
+    b->adv_func->led_set_bright = rqi_led_set_bright;
+    b->adv_func->led_set_close = rqi_led_set_close;
+    b->adv_func->led_check_bright = rqi_led_check_bright;
 
-    // initializations of pwm functions
-    b->adv_func->pwm_init_raw_replace = pwm_init_raw_replace;
-    b->adv_func->pwm_period_replace = pwm_period_replace;
-    b->adv_func->pwm_read_replace = pwm_read_replace;
-    b->adv_func->pwm_write_replace = pwm_write_replace;
-    b->adv_func->pwm_enable_replace = pwm_enable_replace;
 
-    for(i = 0; i < 999; i++) {
-        sprintf(buffer,"/sys/class/gpio/gpiochip%d/device/name",i);
-        if((fd = open(buffer, O_RDONLY)) != -1) {
-            int count = read(fd,buffer,7);
-            if(count != 0) {
-                // GPIO 16-19
-                if(strncmp(buffer, "pca9534", count) == 0) {
-                    base2 = i;
-                }
-                // GPIO 0-15
-                if(strncmp(buffer, "pca9535", count) == 0) {
-                    base1 = i;
-                }
-            }
-            close(fd);
-        }
-    }
 
     syslog(LOG_NOTICE, "ROSCubeI: base1 %d base2 %d\n", base1, base2);
 
-    // Configure PWM
-    b->pwm_dev_count = MRAA_ROSCUBE_PWMCOUNT;
-    b->pwm_default_period = 255;
-    b->pwm_max_period = 218453;
-    b->pwm_min_period = 1;
 
-    mraa_roscube_set_pininfo(b, 1,  "Unused",     (mraa_pincapabilities_t){ -1, 0, 0, 0, 0, 0, 0, 0 }, -1);
-    mraa_roscube_set_pininfo(b, 2,  "Unused",     (mraa_pincapabilities_t){ -1, 0, 0, 0, 0, 0, 0, 0 }, -1);
-    mraa_roscube_set_pininfo(b, 3,  "Unused",     (mraa_pincapabilities_t){ -1, 0, 0, 0, 0, 0, 0, 0 }, -1);
-    mraa_roscube_set_pininfo(b, 4,  "Unused",     (mraa_pincapabilities_t){ -1, 0, 0, 0, 0, 0, 0, 0 }, -1);
-    mraa_roscube_set_pininfo(b, 5,  "Unused",     (mraa_pincapabilities_t){ -1, 0, 0, 0, 0, 0, 0, 0 }, -1);
-    mraa_roscube_set_pininfo(b, 6,  "Unused",     (mraa_pincapabilities_t){ -1, 0, 0, 0, 0, 0, 0, 0 }, -1);
-    mraa_roscube_set_pininfo(b, 7,  "GPIO0",      (mraa_pincapabilities_t){ 1, 1, 0, 0, 0, 0, 0, 0 }, base1 + 0);
-    mraa_roscube_set_pininfo(b, 8,  "GPIO1",      (mraa_pincapabilities_t){ 1, 1, 0, 0, 0, 0, 0, 0 }, base1 + 1);
-    mraa_roscube_set_pininfo(b, 9,  "GPIO2",      (mraa_pincapabilities_t){ 1, 1, 0, 0, 0, 0, 0, 0 }, base1 + 2);
-    mraa_roscube_set_pininfo(b, 10, "GPIO3",      (mraa_pincapabilities_t){ 1, 1, 0, 0, 0, 0, 0, 0 }, base1 + 3);
-    mraa_roscube_set_pininfo(b, 11, "GPIO4",      (mraa_pincapabilities_t){ 1, 1, 0, 0, 0, 0, 0, 0 }, base1 + 4);
-    mraa_roscube_set_pininfo(b, 12, "GPIO5",      (mraa_pincapabilities_t){ 1, 1, 0, 0, 0, 0, 0, 0 }, base1 + 5);
-    mraa_roscube_set_pininfo(b, 13, "GPIO6",      (mraa_pincapabilities_t){ 1, 1, 0, 0, 0, 0, 0, 0 }, base1 + 6);
-    mraa_roscube_set_pininfo(b, 14, "GPIO7",      (mraa_pincapabilities_t){ 1, 1, 0, 0, 0, 0, 0, 0 }, base1 + 7);
-    mraa_roscube_set_pininfo(b, 15, "GPIO8",      (mraa_pincapabilities_t){ 1, 1, 0, 0, 0, 0, 0, 0 }, base1 + 8);
-    mraa_roscube_set_pininfo(b, 16, "GPIO9",      (mraa_pincapabilities_t){ 1, 1, 0, 0, 0, 0, 0, 0 }, base1 + 9);
-    mraa_roscube_set_pininfo(b, 17, "GPIO10",     (mraa_pincapabilities_t){ 1, 1, 0, 0, 0, 0, 0, 0 }, base1 + 10);
-    mraa_roscube_set_pininfo(b, 18, "GPIO11",     (mraa_pincapabilities_t){ 1, 1, 0, 0, 0, 0, 0, 0 }, base1 + 11);
-    mraa_roscube_set_pininfo(b, 19, "GPIO12",     (mraa_pincapabilities_t){ 1, 1, 0, 0, 0, 0, 0, 0 }, base1 + 12);
-    mraa_roscube_set_pininfo(b, 20, "GPIO13",     (mraa_pincapabilities_t){ 1, 1, 0, 0, 0, 0, 0, 0 }, base1 + 13);
-    mraa_roscube_set_pininfo(b, 21, "GPIO14",     (mraa_pincapabilities_t){ 1, 1, 0, 0, 0, 0, 0, 0 }, base1 + 14);
-    mraa_roscube_set_pininfo(b, 22, "GPIO15",     (mraa_pincapabilities_t){ 1, 1, 0, 0, 0, 0, 0, 0 }, base1 + 15);
-    mraa_roscube_set_pininfo(b, 23, "GPIO16",     (mraa_pincapabilities_t){ 1, 1, 0, 0, 0, 0, 0, 0 }, base2 + 0);
-    mraa_roscube_set_pininfo(b, 24, "GPIO17",     (mraa_pincapabilities_t){ 1, 1, 0, 0, 0, 0, 0, 0 }, base2 + 1);
-    mraa_roscube_set_pininfo(b, 25, "GPIO18",     (mraa_pincapabilities_t){ 1, 1, 0, 0, 0, 0, 0, 0 }, base2 + 2);
-    mraa_roscube_set_pininfo(b, 26, "GPIO19",     (mraa_pincapabilities_t){ 1, 1, 0, 0, 0, 0, 0, 0 }, base2 + 3);
-    mraa_roscube_set_pininfo(b, 27, "CAN_TX",     (mraa_pincapabilities_t){ -1, 0, 0, 0, 0, 0, 0, 0 }, -1);
-    mraa_roscube_set_pininfo(b, 28, "SPI_0_SCLK", (mraa_pincapabilities_t){ 1, 0, 0, 0, 1, 0, 0, 0 }, -1);
-    mraa_roscube_set_pininfo(b, 29, "CAN_RX",     (mraa_pincapabilities_t){ -1, 0, 0, 0, 0, 0, 0, 0 }, -1);
-    mraa_roscube_set_pininfo(b, 30, "SPI_0_MISO", (mraa_pincapabilities_t){ 1, 0, 0, 0, 1, 0, 0, 0 }, -1);
-    mraa_roscube_set_pininfo(b, 31, "CANH",       (mraa_pincapabilities_t){ -1, 0, 0, 0, 0, 0, 0, 0 }, -1);
-    mraa_roscube_set_pininfo(b, 32, "SPI_0_MOSI", (mraa_pincapabilities_t){ 1, 0, 0, 0, 1, 0, 0, 0 }, -1);
-    mraa_roscube_set_pininfo(b, 33, "CANL",       (mraa_pincapabilities_t){ -1, 0, 0, 0, 0, 0, 0, 0 }, -1);
-    mraa_roscube_set_pininfo(b, 34, "SPI_0_CS",   (mraa_pincapabilities_t){ 1, 0, 0, 0, 1, 0, 0, 0 }, -1);
-    mraa_roscube_set_pininfo(b, 35, "PWM",        (mraa_pincapabilities_t){ -1, 0, 1, 0, 0, 0, 0, 0 }, -1);
-    mraa_roscube_set_pininfo(b, 36, "I2C0_SDA",   (mraa_pincapabilities_t){ 1, 0, 0, 0, 0, 1, 0, 0 }, -1);
-    mraa_roscube_set_pininfo(b, 37, "5V",         (mraa_pincapabilities_t){ -1, 0, 0, 0, 0, 0, 0, 0 }, -1);
-    mraa_roscube_set_pininfo(b, 38, "I2C0_SCL",   (mraa_pincapabilities_t){ 1, 0, 0, 0, 0, 1, 0, 0 }, -1);
-    mraa_roscube_set_pininfo(b, 39, "5V",         (mraa_pincapabilities_t){ -1, 0, 0, 0, 0, 0, 0, 0 }, -1);
-    mraa_roscube_set_pininfo(b, 40, "3.3V",       (mraa_pincapabilities_t){ -1, 0, 0, 0, 0, 0, 0, 0 }, -1);
-    mraa_roscube_set_pininfo(b, 41, "GND",        (mraa_pincapabilities_t){ -1, 0, 0, 0, 0, 0, 0, 0 }, -1);
-    mraa_roscube_set_pininfo(b, 41, "GND",        (mraa_pincapabilities_t){ -1, 0, 0, 0, 0, 0, 0, 0 }, -1);
-    mraa_roscube_set_pininfo(b, 43, "GND",        (mraa_pincapabilities_t){ -1, 0, 0, 0, 0, 0, 0, 0 }, -1);
-    mraa_roscube_set_pininfo(b, 44, "GND",        (mraa_pincapabilities_t){ -1, 0, 0, 0, 0, 0, 0, 0 }, -1);
 
+    mraa_roscube_set_pininfo(b, 1,  "CN_DI0",            (mraa_pincapabilities_t){  1, 1, 0, 0, 0, 0, 0, 0 }, base1 + 0);
+    mraa_roscube_set_pininfo(b, 2,  "CN_DI1",            (mraa_pincapabilities_t){  1, 1, 0, 0, 0, 0, 0, 0 }, base1 + 1);
+    mraa_roscube_set_pininfo(b, 3,  "CN_DI2",            (mraa_pincapabilities_t){  1, 1, 0, 0, 0, 0, 0, 0 }, base1 + 2);
+    mraa_roscube_set_pininfo(b, 4,  "CN_DI3",            (mraa_pincapabilities_t){  1, 1, 0, 0, 0, 0, 0, 0 }, base1 + 3);
+    mraa_roscube_set_pininfo(b, 5,  "CN_DI4",            (mraa_pincapabilities_t){  1, 1, 0, 0, 0, 0, 0, 0 }, base1 + 4);
+    mraa_roscube_set_pininfo(b, 6,  "CN_DI5",            (mraa_pincapabilities_t){  1, 1, 0, 0, 0, 0, 0, 0 }, base1 + 5);
+    mraa_roscube_set_pininfo(b, 7,  "CN_DI6",            (mraa_pincapabilities_t){  1, 1, 0, 0, 0, 0, 0, 0 }, base1 + 6);
+    mraa_roscube_set_pininfo(b, 8,  "CN_DI7",            (mraa_pincapabilities_t){  1, 1, 0, 0, 0, 0, 0, 0 }, base1 + 7);
+    mraa_roscube_set_pininfo(b, 9,  "GND",               (mraa_pincapabilities_t){ -1, 0, 0, 0, 0, 0, 0, 0 }, -1);
+    mraa_roscube_set_pininfo(b, 10, "CON_PORT0_CAN-L",   (mraa_pincapabilities_t){ -1, 0, 0, 0, 0, 0, 0, 0 }, -1);
+    mraa_roscube_set_pininfo(b, 11, "CON_PORT1_CAN-L",   (mraa_pincapabilities_t){ -1, 0, 0, 0, 0, 0, 0, 0 }, -1);
+    mraa_roscube_set_pininfo(b, 12, "CON_I2C0_SDA",      (mraa_pincapabilities_t){  1, 0, 0, 0, 0, 1, 0, 0 }, -1);
+    mraa_roscube_set_pininfo(b, 13, "CON_I2C0_SCL",      (mraa_pincapabilities_t){  1, 0, 0, 0, 0, 1, 0, 0 }, -1);
+    mraa_roscube_set_pininfo(b, 14, "P_+5V_S_CN",        (mraa_pincapabilities_t){ -1, 0, 0, 0, 0, 0, 0, 0 }, -1);
+    mraa_roscube_set_pininfo(b, 15, "P_+3V3_S_CN",       (mraa_pincapabilities_t){ -1, 0, 0, 0, 0, 0, 0, 0 }, -1);
+    mraa_roscube_set_pininfo(b, 16, "CON_I2C1_SDA",      (mraa_pincapabilities_t){  1, 0, 0, 0, 0, 1, 0, 0 }, -1);
+    mraa_roscube_set_pininfo(b, 17, "CON_I2C1_SCL",      (mraa_pincapabilities_t){  1, 0, 0, 0, 0, 1, 0, 0 }, -1);
+    mraa_roscube_set_pininfo(b, 18, "GND",               (mraa_pincapabilities_t){ -1, 0, 0, 0, 0, 0, 0, 0 }, -1);
+    mraa_roscube_set_pininfo(b, 19, "GND",               (mraa_pincapabilities_t){ -1, 0, 0, 0, 0, 0, 0, 0 }, -1);
+    mraa_roscube_set_pininfo(b, 20, "GND",               (mraa_pincapabilities_t){ -1, 0, 0, 0, 0, 0, 0, 0 }, -1);
+    mraa_roscube_set_pininfo(b, 21, "GND",               (mraa_pincapabilities_t){ -1, 0, 0, 0, 0, 0, 0, 0 }, -1);
+    mraa_roscube_set_pininfo(b, 22, "GND",               (mraa_pincapabilities_t){ -1, 0, 0, 0, 0, 0, 0, 0 }, -1);
+    mraa_roscube_set_pininfo(b, 23, "GND",               (mraa_pincapabilities_t){ -1, 0, 0, 0, 0, 0, 0, 0 }, -1);
+    mraa_roscube_set_pininfo(b, 24, "GND",               (mraa_pincapabilities_t){ -1, 0, 0, 0, 0, 0, 0, 0 }, -1);
+    mraa_roscube_set_pininfo(b, 25, "GND",               (mraa_pincapabilities_t){ -1, 0, 0, 0, 0, 0, 0, 0 }, -1);
+    mraa_roscube_set_pininfo(b, 26, "GND",               (mraa_pincapabilities_t){ -1, 0, 0, 0, 0, 0, 0, 0 }, -1);
+    mraa_roscube_set_pininfo(b, 27, "GND",               (mraa_pincapabilities_t){ -1, 0, 0, 0, 0, 0, 0, 0 }, -1);
+    mraa_roscube_set_pininfo(b, 28, "GND",               (mraa_pincapabilities_t){ -1, 0, 0, 0, 0, 0, 0, 0 }, -1);
+    mraa_roscube_set_pininfo(b, 29, "GND",               (mraa_pincapabilities_t){ -1, 0, 0, 0, 0, 0, 0, 0 }, -1);
+    mraa_roscube_set_pininfo(b, 30, "GND",               (mraa_pincapabilities_t){ -1, 0, 0, 0, 0, 0, 0, 0 }, -1);
+    mraa_roscube_set_pininfo(b, 31, "GND",               (mraa_pincapabilities_t){ -1, 0, 0, 0, 0, 0, 0, 0 }, -1);
+    mraa_roscube_set_pininfo(b, 32, "GND",               (mraa_pincapabilities_t){ -1, 0, 0, 0, 0, 0, 0, 0 }, -1);
+    mraa_roscube_set_pininfo(b, 33, "GND",               (mraa_pincapabilities_t){ -1, 0, 0, 0, 0, 0, 0, 0 }, -1);
+    mraa_roscube_set_pininfo(b, 34, "CN_DO",             (mraa_pincapabilities_t){  1, 1, 0, 0, 0, 0, 0, 0 }, base2 + 0);
+    mraa_roscube_set_pininfo(b, 35, "CN_DO",             (mraa_pincapabilities_t){  1, 1, 0, 0, 0, 0, 0, 0 }, base2 + 1);
+    mraa_roscube_set_pininfo(b, 36, "CN_DO",             (mraa_pincapabilities_t){  1, 1, 0, 0, 0, 0, 0, 0 }, base2 + 2);
+    mraa_roscube_set_pininfo(b, 37, "CN_DO",             (mraa_pincapabilities_t){  1, 1, 0, 0, 0, 0, 0, 0 }, base2 + 3);
+    mraa_roscube_set_pininfo(b, 38, "CN_DO",             (mraa_pincapabilities_t){  1, 1, 0, 0, 0, 0, 0, 0 }, base2 + 4);
+    mraa_roscube_set_pininfo(b, 39, "CN_DO",             (mraa_pincapabilities_t){  1, 1, 0, 0, 0, 0, 0, 0 }, base2 + 5);
+    mraa_roscube_set_pininfo(b, 40, "CN_DO",             (mraa_pincapabilities_t){  1, 1, 0, 0, 0, 0, 0, 0 }, base2 + 6);
+    mraa_roscube_set_pininfo(b, 41, "CN_DO",             (mraa_pincapabilities_t){  1, 1, 0, 0, 0, 0, 0, 0 }, base2 + 7);
+    mraa_roscube_set_pininfo(b, 42, "CN_DO",             (mraa_pincapabilities_t){  1, 1, 0, 0, 0, 0, 0, 0 }, base2 + 8);
+    mraa_roscube_set_pininfo(b, 43, "GND",               (mraa_pincapabilities_t){ -1, 0, 0, 0, 0, 0, 0, 0 }, -1);
+    mraa_roscube_set_pininfo(b, 44, "CON_PORY0_CAN-H",   (mraa_pincapabilities_t){ -1, 0, 0, 0, 0, 0, 0, 0 }, -1);
+    mraa_roscube_set_pininfo(b, 45, "GND",               (mraa_pincapabilities_t){ -1, 0, 0, 0, 0, 0, 0, 0 }, -1);
+    mraa_roscube_set_pininfo(b, 46, "PCH_I2C0_GPIO",     (mraa_pincapabilities_t){ -1, 0, 0, 0, 0, 0, 0, 0 }, -1);   // not GPIO
+    mraa_roscube_set_pininfo(b, 47, "GND",               (mraa_pincapabilities_t){ -1, 0, 0, 0, 0, 0, 0, 0 }, -1);
+    mraa_roscube_set_pininfo(b, 48, "PCH_AFM_GPIO5",     (mraa_pincapabilities_t){ -1, 0, 0, 0, 0, 0, 0, 0 }, -1);   // not GPIO
+    mraa_roscube_set_pininfo(b, 49, "GND",               (mraa_pincapabilities_t){ -1, 0, 0, 0, 0, 0, 0, 0 }, -1);
+    mraa_roscube_set_pininfo(b, 50, "GND",               (mraa_pincapabilities_t){ -1, 0, 0, 0, 0, 0, 0, 0 }, -1);
+    
+    
+    
     b->uart_dev_count = MRAA_ROSCUBE_UARTCOUNT;
     for (int i = 0; i < MRAA_ROSCUBE_UARTCOUNT; i++)
         mraa_roscube_init_uart(b, i);
     b->def_uart_dev = 0;
-
-#if 0 // TODO: SPI
+    #if 0
     // Configure SPI #0 CS1
     b->spi_bus_count = 0;
     b->spi_bus[b->spi_bus_count].bus_id = 1;
@@ -307,36 +290,30 @@ mraa_board_t* mraa_roscube_i()
     mraa_roscube_get_pin_index(b, "SPI_0_MISO", &(b->spi_bus[b->spi_bus_count].miso));
     mraa_roscube_get_pin_index(b, "SPI_0_SCLK",  &(b->spi_bus[b->spi_bus_count].sclk));
     b->spi_bus_count++;
-
+    #endif
     // Set number of i2c adaptors usable from userspace
     b->i2c_bus_count = 0;
     b->def_i2c_bus = 0;
 
-    i2c_bus_num = mraa_find_i2c_bus_pci("0000:00", "0000:00:16.1", "i2c_designware.1");
-    if (i2c_bus_num != -1) {
-        if(sx150x_init(i2c_bus_num) < 0)
-        {
-            _fd = -1;
-        }
+    i2c_bus_num = mraa_find_i2c_bus_pci("0000:00", "0000:00:15.0","i2c_designware.0");
 
+    if (i2c_bus_num != -1) {
         b->i2c_bus[0].bus_id = i2c_bus_num;
-        mraa_roscube_get_pin_index(b, "I2C1_DAT", (int*) &(b->i2c_bus[1].sda));
-        mraa_roscube_get_pin_index(b, "I2C1_CK", (int*) &(b->i2c_bus[1].scl));
+        mraa_roscube_get_pin_index(b, "CON_I2C0_SDA", (int*) &(b->i2c_bus[0].sda));
+        mraa_roscube_get_pin_index(b, "CON_I2C0_SCL", (int*) &(b->i2c_bus[0].scl));
         b->i2c_bus_count++;
     }
 
-    i2c_bus_num = mraa_find_i2c_bus_pci("0000:00", "0000:00:1f.1", ".");
+    i2c_bus_num = mraa_find_i2c_bus_pci("0000:00", "0000:00:15.1","i2c_designware.1");
+
     if (i2c_bus_num != -1) {
         b->i2c_bus[1].bus_id = i2c_bus_num;
-        mraa_roscube_get_pin_index(b, "I2C0_DAT", (int*) &(b->i2c_bus[0].sda));
-        mraa_roscube_get_pin_index(b, "I2C0_CK", (int*) &(b->i2c_bus[0].scl));
+        mraa_roscube_get_pin_index(b, "CON_I2C1_SDA", (int*) &(b->i2c_bus[1].sda));
+        mraa_roscube_get_pin_index(b, "CON_I2C1_SDA", (int*) &(b->i2c_bus[1].scl));
         b->i2c_bus_count++;
     }
 
-    const char* pinctrl_path = "/sys/bus/platform/drivers/broxton-pinctrl";
-    int have_pinctrl = access(pinctrl_path, F_OK) != -1;
-    syslog(LOG_NOTICE, "ROSCUBE I: kernel pinctrl driver %savailable", have_pinctrl ? "" : "un");
-#endif
+
 
     return b;
 
