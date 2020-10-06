@@ -245,7 +245,7 @@ endif()
 ## Set the package type
 set(CPACK_GENERATOR "DEB")
 ## Set the package version
-set(CPACK_PACKAGE_VERSION "1.1.0")
+set(CPACK_PACKAGE_VERSION "1.2.0")
 # Set the package name
 set(CPACK_PACKAGE_NAME "neuron-library")
 # Set the package file format
