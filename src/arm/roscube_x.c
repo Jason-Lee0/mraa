@@ -146,48 +146,19 @@ mraa_board_t* mraa_roscube_x()
     b->adv_func->gpio_close_pre = NULL;
     b->adv_func->gpio_init_pre = NULL;
 
-#if 0 // TODO: PWM
-    // initializations of pwm functions
-    b->adv_func->pwm_init_raw_replace = pwm_init_raw_replace;
-    b->adv_func->pwm_period_replace = pwm_period_replace;
-    b->adv_func->pwm_read_replace = pwm_read_replace;
-    b->adv_func->pwm_write_replace = pwm_write_replace;
-    b->adv_func->pwm_enable_replace = pwm_enable_replace;
-#endif
-
-#if 0
-    for(i = 0; i < 999; i++) {
-        sprintf(buffer,"/sys/class/gpio/gpiochip%d/device/name",i);
-        if((fd = open(buffer, O_RDONLY)) != -1) {
-            int count = read(fd,buffer,7);
-            if(count != 0) {
-                // GPIO 16-19
-                if(strncmp(buffer, "pca9534", count) == 0) {
-                    base2 = i;
-                }
-                // GPIO 0-15
-                if(strncmp(buffer, "pca9535", count) == 0) {
-                    base1 = i;
-                }
-            }
-            close(fd);
-        }
-    }
-#else
     // We fix the base currently.
     base1 = 216;
-#endif
+
 
     syslog(LOG_NOTICE, "ROSCubeX: base1 %d base2 %d\n", base1, base2);
 
-// TODO: check PWM
-#if 0
+
     // Configure PWM
     b->pwm_dev_count = 0;
     b->pwm_default_period = 5000;
-    b->pwm_max_period = 218453;
+    b->pwm_max_period = 660066006;
     b->pwm_min_period = 1;
-#endif
+
 
     mraa_roscube_set_pininfo(b, 1,  "ADC1_isolation", (mraa_pincapabilities_t){ -1, 0, 0, 0, 0, 0, 0, 0 }, -1);
     mraa_roscube_set_pininfo(b, 2,  "ADC2_isolation", (mraa_pincapabilities_t){ -1, 0, 0, 0, 0, 0, 0, 0 }, -1);
@@ -244,25 +215,16 @@ mraa_board_t* mraa_roscube_x()
         mraa_roscube_init_uart(b, i);
     b->def_uart_dev = 0;
 
-#if 0 // TODO: SPI
-    // Configure SPI #0 CS1
-    b->spi_bus_count = 0;
-    b->spi_bus[b->spi_bus_count].bus_id = 1;
-    b->spi_bus[b->spi_bus_count].slave_s = 0;
-    mraa_roscube_get_pin_index(b, "SPI_0_CE0",  &(b->spi_bus[b->spi_bus_count].cs));
-    mraa_roscube_get_pin_index(b, "SPI_0_MOSI", &(b->spi_bus[b->spi_bus_count].mosi));
-    mraa_roscube_get_pin_index(b, "SPI_0_MISO", &(b->spi_bus[b->spi_bus_count].miso));
-    mraa_roscube_get_pin_index(b, "SPI_0_SCLK",  &(b->spi_bus[b->spi_bus_count].sclk));
-    b->spi_bus_count++;
 
-    b->spi_bus[b->spi_bus_count].bus_id = 1;
-    b->spi_bus[b->spi_bus_count].slave_s = 1;
-    mraa_roscube_get_pin_index(b, "SPI_0_CE1",  &(b->spi_bus[b->spi_bus_count].cs));
-    mraa_roscube_get_pin_index(b, "SPI_0_MOSI", &(b->spi_bus[b->spi_bus_count].mosi));
-    mraa_roscube_get_pin_index(b, "SPI_0_MISO", &(b->spi_bus[b->spi_bus_count].miso));
-    mraa_roscube_get_pin_index(b, "SPI_0_SCLK",  &(b->spi_bus[b->spi_bus_count].sclk));
-    b->spi_bus_count++;
-#endif
+    // Configure SPI #0 CS1
+    b->spi_bus_count = 1;
+    b->spi_bus[0].bus_id = 0;
+    b->spi_bus[0].slave_s = 0;  //slave select
+    mraa_roscube_get_pin_index(b, "SPI_CS",  &(b->spi_bus[0].cs));
+    mraa_roscube_get_pin_index(b, "SPI_MOSI", &(b->spi_bus[0].mosi));
+    mraa_roscube_get_pin_index(b, "SPI_MISO", &(b->spi_bus[0].miso));
+    mraa_roscube_get_pin_index(b, "SPI_CLK",  &(b->spi_bus[0].sclk));
+
     // Set number of i2c adaptors usable from userspace
     b->i2c_bus_count = 0;
     b->def_i2c_bus = 0;
