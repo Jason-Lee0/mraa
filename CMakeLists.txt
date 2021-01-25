@@ -224,6 +224,9 @@ SET(CMAKE_INSTALL_RPATH "/opt/adlink/neuron-sdk/neuron-library/lib/")
 SET(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
 # Add ADLINKE_CHANGELOG to install path
 install (FILES ${PROJECT_SOURCE_DIR}/ADLINK_CHANGELOG DESTINATION .)
+install (FILES ${PROJECT_SOURCE_DIR}/99-roscube-device.rules DESTINATION "/etc/udev/rules.d")
+
+
 
 add_subdirectory (src)
 if (ENABLEEXAMPLES)
@@ -245,6 +248,7 @@ endif()
 
 # Here is cpack settings
 ## Set the package type
+set(CPACK_DEBIAN_PACKAGE_CONTROL_EXTRA "${CMAKE_CURRENT_SOURCE_DIR}/postinst;")
 set(CPACK_GENERATOR "DEB")
 ## Set the package version
 set(CPACK_PACKAGE_VERSION "1.3.1")
