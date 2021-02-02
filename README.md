@@ -1,16 +1,16 @@
-Neuron Library - Low Level Skeleton Library for Communication on ROScube
-=============================================================================
+Neuron Library - Peripheral API Library for ROScube
+===================================================
 
 Neuron Library is the API library for ADLINK products, such as ROScube-I and
 ROScube-X. Neuron Library provides a common API of C++ bindings to Python to
-interface with the peripheral IO of the controller. With a structured and sane
+interface with the peripheral IO of the controller. With a structured and same
 API where port index matches the platform that you are on, it's easier for
 developers and sensor manufacturers to map their sensors & actuators on top
 of supported hardware and to allow control of low level communication protocol
 by high level languages & constructs.
 
 Supported Hardware
-================
+==================
 
 X86
 ---
