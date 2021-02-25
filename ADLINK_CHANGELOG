@@ -2,6 +2,11 @@
 Changelog for Neuron Library
 ============================
 
+v1.3.3
+-------------------
+1. Support PWM & SPI on ROScube Pico.
+2. Bugfix: LED on ROScube-I unusable.
+
 v1.3.2
 -------------------
 1. Support ROScube Pico (exclude PWM & SPI).
