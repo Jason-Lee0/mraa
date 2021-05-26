@@ -105,8 +105,11 @@ set (mraa_LIB_ARM_SRCS_NOAUTO
   ${PROJECT_SOURCE_DIR}/src/arm/de_nano_soc.c
   ${PROJECT_SOURCE_DIR}/src/arm/rockpi4.c
   ${PROJECT_SOURCE_DIR}/src/arm/adlink_ipi.c
-  ${PROJECT_SOURCE_DIR}/src/arm/roscube_x.c
-  ${PROJECT_SOURCE_DIR}/src/arm/roscube_pico_nx.c
+  ${PROJECT_SOURCE_DIR}/src/arm/roscube_pico_npn1.c
+  ${PROJECT_SOURCE_DIR}/src/arm/roscube_pico_npn2.c
+  ${PROJECT_SOURCE_DIR}/src/arm/roscube_pico_npn3.c
+  ${PROJECT_SOURCE_DIR}/src/arm/roscube_x_580.c
+  ${PROJECT_SOURCE_DIR}/src/arm/roscube_x_58g.c
 )
 
 set (mraa_LIB_MIPS_SRCS_NOAUTO

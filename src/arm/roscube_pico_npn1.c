@@ -30,12 +30,12 @@
 
 #include "common.h"
 #include "gpio.h"
-#include "arm/roscube_pico_nx.h"
+#include "arm/roscube_pico_npn1.h"
 #include "gpio/gpio_chardev.h"
 
 #define SYSFS_CLASS_GPIO "/sys/class/gpio"
 
-#define PLATFORM_NAME "ROSCUBE-PICO-NX"
+#define PLATFORM_NAME "ROSCUBE-PICO-NPN1"
 
 #define MRAA_ROSCUBE_GPIOCOUNT 5
 #define MRAA_ROSCUBE_UARTCOUNT 1
@@ -391,7 +391,7 @@ static mraa_result_t mraa_roscube_get_pin_index(mraa_board_t* board, char* name,
         }
     }
 
-    syslog(LOG_CRIT, "ROSCUBE PICO NX: Failed to find pin name %s", name);
+    syslog(LOG_CRIT, "ROSCUBE PICO NPN1: Failed to find pin name %s", name);
 
     return MRAA_ERROR_INVALID_RESOURCE;
 }
@@ -410,7 +410,7 @@ static mraa_result_t mraa_roscube_init_uart(mraa_board_t* board, int index)
     return MRAA_SUCCESS;
 }
 
-mraa_board_t* mraa_roscube_pico_nx()
+mraa_board_t* mraa_roscube_pico_npn1()
 {
     int i, fd, i2c_bus_num;
     char buffer[60] = {0}, *line = NULL;
@@ -424,11 +424,11 @@ mraa_board_t* mraa_roscube_pico_nx()
         return NULL;
     }
     b->platform_name = PLATFORM_NAME;
-    b->phy_pin_count = MRAA_ROSCUBE_PICO_NX_PINCOUNT;
+    b->phy_pin_count = MRAA_ROSCUBE_PICO_NPN1_PINCOUNT;
     b->gpio_count = MRAA_ROSCUBE_GPIOCOUNT;
     b->chardev_capable = 0;
 
-    b->pins = (mraa_pininfo_t*) malloc(sizeof(mraa_pininfo_t) * MRAA_ROSCUBE_PICO_NX_PINCOUNT);
+    b->pins = (mraa_pininfo_t*) malloc(sizeof(mraa_pininfo_t) * MRAA_ROSCUBE_PICO_NPN1_PINCOUNT);
     if (b->pins == NULL) 
     {
         goto error;
@@ -448,7 +448,7 @@ mraa_board_t* mraa_roscube_pico_nx()
     // We fix the base currently.
     base1 = 231;
 
-    syslog(LOG_NOTICE, "ROSCube Pico NX: base1 %d \n", base1);
+    syslog(LOG_NOTICE, "ROSCube Pico NPN1: base1 %d \n", base1);
 
     // Configure PWM
     b->pwm_dev_count = 4;
@@ -558,7 +558,7 @@ mraa_board_t* mraa_roscube_pico_nx()
     return b;
 
 error:
-    syslog(LOG_CRIT, "ROSCUBE PICO NX: Platform failed to initialise");
+    syslog(LOG_CRIT, "ROSCUBE PICO NPN1: Platform failed to initialise");
     free(b);
     close(_fd);
     return NULL;

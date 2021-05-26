@@ -1,8 +1,10 @@
  /*
  * Author: Dan O'Donovan <dan@emutex.com>
  * Author: Santhanakumar A <santhanakumar.a@adlinktech.com>
+ * Author: Chester Tseng <chester.tseng@adlinktech.com>
 
  * Copyright (c) 2019 ADLINK Technology Inc.
+ * Copyright (c) 2021 ADLINK Technology Inc.
  * SPDX-License-Identifier: MIT
 
 */
@@ -21,8 +23,6 @@
 
 #include <dirent.h>
 #include <fcntl.h>
-#include <poll.h>
-#include <pthread.h>
 #include <signal.h>
 #include <stdlib.h>
 #include <sys/ioctl.h>
@@ -33,21 +33,18 @@
 
 #include "common.h"
 #include "gpio.h"
-#include "arm/roscube_x.h"
+#include "arm/roscube_x_580.h"
 #include "gpio/gpio_chardev.h"
 
 #define SYSFS_CLASS_GPIO "/sys/class/gpio"
 
-#define PLATFORM_NAME "ROSCUBE-X"
+#define PLATFORM_NAME "RQX-580"
 
 #define MRAA_ROSCUBE_GPIOCOUNT 20
 #define MRAA_ROSCUBE_UARTCOUNT 3
 #define MRAA_ROSCUBE_X_LEDCOUNT 6
-#define MAX_SIZE 64
-#define POLL_TIMEOUT
-const char* ROSCube_X_LED[MRAA_ROSCUBE_X_LEDCOUNT] = { "LED1", "LED2", "LED3","LED4", "LED5", "LED6"};
-static volatile int base1, base2, _fd;
-static mraa_gpio_context gpio;
+static char* ROSCube_X_LED[MRAA_ROSCUBE_X_LEDCOUNT] = { "LED1", "LED2", "LED3","LED4", "LED5", "LED6"};
+static volatile int base1, _fd;
 static char* uart_name[MRAA_ROSCUBE_UARTCOUNT] = {"COM1", "COM2","COM3_DB50" };
 static char* uart_path[MRAA_ROSCUBE_UARTCOUNT] = {"/dev/ttyUSB0", "/dev/ttyUSB1","/dev/ttyTHS0"};
 
@@ -87,7 +84,7 @@ static mraa_result_t mraa_roscube_get_pin_index(mraa_board_t* board, char* name,
         }
     }
 
-    syslog(LOG_CRIT, "ROSCUBE X: Failed to find pin name %s", name);
+    syslog(LOG_CRIT, "RQX-580: Failed to find pin name %s", name);
 
     return MRAA_ERROR_INVALID_RESOURCE;
 }
@@ -106,12 +103,9 @@ static mraa_result_t mraa_roscube_init_uart(mraa_board_t* board, int index)
     return MRAA_SUCCESS;
 }
 
-mraa_board_t* mraa_roscube_x()
+mraa_board_t* mraa_roscube_x_580()
 {
-    int i, fd, i2c_bus_num;
-    char buffer[60] = {0}, *line = NULL;
-    FILE *fh;
-    size_t len;
+    int i2c_bus_num;
 
     mraa_board_t* b = (mraa_board_t*) calloc(1, sizeof (mraa_board_t));
 
@@ -149,8 +143,7 @@ mraa_board_t* mraa_roscube_x()
     // We fix the base currently.
     base1 = 216;
 
-
-    syslog(LOG_NOTICE, "ROSCubeX: base1 %d base2 %d\n", base1, base2);
+    syslog(LOG_NOTICE, "RQx-580: base1 %d.\n", base1);
 
 
     // Configure PWM
@@ -237,16 +230,10 @@ mraa_board_t* mraa_roscube_x()
         b->i2c_bus_count++;
     }
 
-#if 0 
-    const char* pinctrl_path = "/sys/bus/platform/drivers/broxton-pinctrl";
-    int have_pinctrl = access(pinctrl_path, F_OK) != -1;
-    syslog(LOG_NOTICE, "ROSCUBE X: kernel pinctrl driver %savailable", have_pinctrl ? "" : "un");
-#endif
-
     return b;
 
 error:
-    syslog(LOG_CRIT, "ROSCUBE X: Platform failed to initialise");
+    syslog(LOG_CRIT, "RQX-580: Platform failed to initialise");
     free(b);
     close(_fd);
     return NULL;

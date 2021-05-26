@@ -56,19 +56,22 @@ typedef enum {
 #if __STDC_VERSION__ >= 199901L
     MRAA_INTEL_GT_TUCHUCK = MRAA_INTEL_JOULE_EXPANSION, // deprecated
 #endif
-    MRAA_PHYBOARD_WEGA = 14,        /**< The phyBOARD-Wega */
-    MRAA_DE_NANO_SOC = 15,          /**< Terasic DE-Nano-SoC Board */
-    MRAA_UP2 = 16,                  /**< The UP^2 Board */
-    MRAA_MTK_LINKIT = 17,           /**< Mediatek MT7688 based Linkit boards */
-    MRAA_MTK_OMEGA2 = 18,           /**< MT7688 based Onion Omega2 board */
-    MRAA_IEI_TANK = 19,             /**< IEI Tank System*/
-    MRAA_ROCKPI4 = 20,              /**< Radxa ROCK PI 4 Models A/B */
-    MRAA_ADLINK_IPI = 21,           /**< Adlink Industrial PI */
-    MRAA_ADLINK_LEC_AL = 22,        /**< Adlink LEC-AL*/
-    MRAA_ADLINK_LEC_AL_AI = 23,        /**< Adlink LEC-AL*/
-    MRAA_ADLINK_ROSCUBE_I = 24,     /**< Adlink ROSCube I*/
-    MRAA_ADLINK_ROSCUBE_X = 25,     /**< Adlink ROSCube X*/
-    MRAA_ADLINK_ROSCUBE_PICO_NX = 26,   /**< Adlink ROSCube Pico NX*/
+    MRAA_PHYBOARD_WEGA = 14,                /**< The phyBOARD-Wega */
+    MRAA_DE_NANO_SOC = 15,                  /**< Terasic DE-Nano-SoC Board */
+    MRAA_UP2 = 16,                          /**< The UP^2 Board */
+    MRAA_MTK_LINKIT = 17,                   /**< Mediatek MT7688 based Linkit boards */
+    MRAA_MTK_OMEGA2 = 18,                   /**< MT7688 based Onion Omega2 board */
+    MRAA_IEI_TANK = 19,                     /**< IEI Tank System*/
+    MRAA_ROCKPI4 = 20,                      /**< Radxa ROCK PI 4 Models A/B */
+    MRAA_ADLINK_IPI = 21,                   /**< Adlink Industrial PI */
+    MRAA_ADLINK_LEC_AL = 22,                /**< Adlink LEC-AL*/
+    MRAA_ADLINK_LEC_AL_AI = 23,             /**< Adlink LEC-AL*/
+    MRAA_ADLINK_ROSCUBE_I = 24,             /**< Adlink ROSCube I*/
+    MRAA_ADLINK_ROSCUBE_X_580 = 25,         /**< Adlink ROSCube X. RQX580 */
+    MRAA_ADLINK_ROSCUBE_X_58G = 26,         /**< Adlink ROSCube X. RQX58G */
+    MRAA_ADLINK_ROSCUBE_PICO_NPN1 = 27,     /**< Adlink ROSCube Pico. NPN1*/
+    MRAA_ADLINK_ROSCUBE_PICO_NPN2 = 28,     /**< Adlink ROSCube Pico. NPN2*/
+    MRAA_ADLINK_ROSCUBE_PICO_NPN3 = 29,     /**< Adlink ROSCube Pico. NPN3*/
     // USB platform extenders start at 256
     MRAA_FTDI_FT4222 = 256,         /**< FTDI FT4222 USB to i2c bridge */
 

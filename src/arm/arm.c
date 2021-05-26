@@ -18,8 +18,11 @@
 #include "arm/raspberry_pi.h"
 #include "arm/adlink_ipi.h"
 #include "mraa_internal.h"
-#include "arm/roscube_x.h"
-#include "arm/roscube_pico_nx.h"
+#include "arm/roscube_x_580.h"
+#include "arm/roscube_x_58g.h"
+#include "arm/roscube_pico_npn1.h"
+#include "arm/roscube_pico_npn2.h"
+#include "arm/roscube_pico_npn3.h"
 
 
 mraa_platform_t
@@ -77,12 +80,19 @@ mraa_arm_platform()
     char model_name[200];
     fgets(model_name, 200, fh); 
     fclose(fh);
-    //printf("%s",&model_name);
-    if ( strcmp(model_name , "ADLINK ROScube-Pico NX Development Kit")==0){
-        platform_type = MRAA_ADLINK_ROSCUBE_PICO_NX;
+    if (strcmp(model_name , "ADLINK ROScube-Pico Nano Development Kit") == 0){
+        platform_type = MRAA_ADLINK_ROSCUBE_PICO_NPN1;
+    } else if (strcmp(model_name, "ADLINK ROScube-Pico NX Development Kit") == 0) {
+        platform_type = MRAA_ADLINK_ROSCUBE_PICO_NPN2;
+    } else if (strcmp(model_name, "ADLINK ROScube-Pico TX2NX Development Kit") == 0) {
+        platform_type = MRAA_ADLINK_ROSCUBE_PICO_NPN3;
+    } else if (strcmp(model_name, "ADLINK ROScube-X 580 Robotic Controller") == 0) {
+        platform_type = MRAA_ADLINK_ROSCUBE_X_580;
+    } else if (strcmp(model_name, "ADLINK ROScube-X 58G Robotic Controller") == 0) {
+        platform_type = MRAA_ADLINK_ROSCUBE_X_58G;
     }
     else{
-        platform_type = MRAA_ADLINK_ROSCUBE_X;
+        platform_type = MRAA_UNKNOWN_PLATFORM;
     }
         
 #endif
@@ -143,11 +153,20 @@ mraa_arm_platform()
 	    case MRAA_ADLINK_IPI:
 	        plat = mraa_adlink_ipi();
 	        break;
-	    case MRAA_ADLINK_ROSCUBE_X:
-	        plat = mraa_roscube_x();
+	    case MRAA_ADLINK_ROSCUBE_X_580:
+	        plat = mraa_roscube_x_580();
 	        break;
-        case MRAA_ADLINK_ROSCUBE_PICO_NX:
-            plat = mraa_roscube_pico_nx();
+        case MRAA_ADLINK_ROSCUBE_X_58G:
+            plat = mraa_roscube_x_58g();
+            break;
+        case MRAA_ADLINK_ROSCUBE_PICO_NPN1:
+            plat = mraa_roscube_pico_npn1();
+            break;
+        case MRAA_ADLINK_ROSCUBE_PICO_NPN2:
+            plat = mraa_roscube_pico_npn2();
+            break;
+        case MRAA_ADLINK_ROSCUBE_PICO_NPN3:
+            plat = mraa_roscube_pico_npn3();
             break;
         default:
             plat = NULL;
