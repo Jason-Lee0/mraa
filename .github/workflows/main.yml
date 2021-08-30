@@ -26,6 +26,7 @@ jobs:
       - name: Run Build Archive
         run: |
           echo ${{env.RELEASE_VERSION}}
+          rm -rf build
           cmake -Bbuild -H. -DBUILDSWIGNODE=OFF
           cmake --build build --target package
           if [ -f "build/neuron-library_${{env.RELEASE_VERSION}}_arm64.deb" ]; then
