@@ -28,14 +28,13 @@ jobs:
             apt install -q -y git build-essential swig3.0 python-dev python3 python3-dev nodejs-dev cmake libjson-c-dev curl pkg-config
           run: |
             echo ${{env.RELEASE_VERSION}}
-            sudo rm -rf build
-            cmake -Bbuild -H. -DBUILDSWIGNODE=OFF
-            cmake --build build --target package
-            if [ -f "build/neuron-library_${{env.RELEASE_VERSION}}_arm64.deb" ]; then
+            cmake -B/tmp/build -H. -DBUILDSWIGNODE=OFF
+            cmake --build /tmp/build --target package
+            if [ -f "/tmp/build/neuron-library_${{env.RELEASE_VERSION}}_arm64.deb" ]; then
               echo "\nRemove existing neuron-library debian package\n"
               curl -X DELETE http://website:10080/api/files/neuron-library
               echo "\nAdding package neuron-library debian package to local storage\n"
-              curl -X POST -F file=@build/neuron-library_${{env.RELEASE_VERSION}}_arm64.deb http://website:10080/api/files/neuron-library
+              curl -X POST -F file=@/tmp/build/neuron-library_${{env.RELEASE_VERSION}}_arm64.deb http://website:10080/api/files/neuron-library
               sleep 0.5
               echo "Posting folder neuron-library to repo bionic-common"
               curl -X POST http://website:10080/api/repos/bionic-common/file/neuron-library?noRemove=1
