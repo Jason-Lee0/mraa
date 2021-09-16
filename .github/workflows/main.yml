@@ -44,3 +44,4 @@ jobs:
               echo "\nRemove existing neuron-library deb files\n"
               curl -X DELETE http://website:10080/api/files/neuron-library
             fi
+            rm -rf build
