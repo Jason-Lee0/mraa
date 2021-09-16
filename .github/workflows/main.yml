@@ -25,7 +25,7 @@ jobs:
           distro: ubuntu18.04
           install: |
             apt update -q -y
-            apt install -q -y git build-essential swig3.0 python-dev nodejs-dev cmake libjson-c-dev curl pkg-config
+            apt install -q -y git build-essential swig3.0 python-dev python3 python3-dev nodejs-dev cmake libjson-c-dev curl pkg-config
           run: |
             echo ${{env.RELEASE_VERSION}}
             sudo rm -rf build
@@ -45,6 +45,7 @@ jobs:
               echo "\nRemove existing neuron-library deb files\n"
               curl -X DELETE http://website:10080/api/files/neuron-library
             fi
+<<<<<<< HEAD
 
       # - name: Run Build Archive
         # run: |
@@ -66,3 +67,5 @@ jobs:
             # echo "\nRemove existing neuron-library deb files\n"
             # curl -X DELETE http://website:10080/api/files/neuron-library
           # fi
+=======
+>>>>>>> 2aa9286f38bf6a58374beca20856d55e0bc997bd
