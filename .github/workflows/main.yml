@@ -28,7 +28,7 @@ jobs:
             apt install -q -y git build-essential swig3.0 python-dev python3 python3-dev nodejs-dev cmake libjson-c-dev curl pkg-config
           run: |
             echo ${{env.RELEASE_VERSION}}
-            cmake -B/tmp/build -H. -DBUILDSWIGNODE=OFF
+            cmake -B/tmp/build -H. -DBUILDSWIGNODE=OFF -DCMAKE_INSTALL_PREFIX=/opt/adlink/neuron-sdk/neuron-library/
             cmake --build /tmp/build --target package
             if [ -f "build/neuron-library_${{env.RELEASE_VERSION}}_arm64.deb" ]; then
               echo "\nRemove existing neuron-library debian package\n"
