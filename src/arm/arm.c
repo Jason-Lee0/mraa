@@ -45,7 +45,7 @@ mraa_arm_platform()
         platform_type = MRAA_ADLINK_ROSCUBE_X_580;
     } else if (strcmp(model_name, "ADLINK ROScube-X 58G Robotic Controller") == 0) {
         platform_type = MRAA_ADLINK_ROSCUBE_X_58G;
-    } else if (strcmp(model_name, "ADLINK RCX-G70 Robotic Controller")) {
+    } else if (strcmp(model_name, "ADLINK RCX-G70 Robotic Controller") == 0) {
         platform_type = MRAA_ADLINK_RUGGED_CONTROLLER_RCX_G70;
     }
     else{
