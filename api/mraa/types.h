@@ -72,6 +72,7 @@ typedef enum {
     MRAA_ADLINK_ROSCUBE_PICO_NPN1 = 27,     /**< Adlink ROSCube Pico. NPN1*/
     MRAA_ADLINK_ROSCUBE_PICO_NPN2 = 28,     /**< Adlink ROSCube Pico. NPN2*/
     MRAA_ADLINK_ROSCUBE_PICO_NPN3 = 29,     /**< Adlink ROSCube Pico. NPN3*/
+    MRAA_ADLINK_RUGGED_CONTROLLER_RCX_G70 = 30, /**< ADLINK Rugged Controller. RCX-G70*/
     // USB platform extenders start at 256
     MRAA_FTDI_FT4222 = 256,         /**< FTDI FT4222 USB to i2c bridge */
 

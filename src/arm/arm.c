@@ -23,6 +23,7 @@
 #include "arm/roscube_pico_npn1.h"
 #include "arm/roscube_pico_npn2.h"
 #include "arm/roscube_pico_npn3.h"
+#include "arm/rugged_controller_rcx_g70.h"
 
 
 mraa_platform_t
@@ -44,6 +45,8 @@ mraa_arm_platform()
         platform_type = MRAA_ADLINK_ROSCUBE_X_580;
     } else if (strcmp(model_name, "ADLINK ROScube-X 58G Robotic Controller") == 0) {
         platform_type = MRAA_ADLINK_ROSCUBE_X_58G;
+    } else if (strcmp(model_name, "ADLINK RCX-G70 Robotic Controller")) {
+        platform_type = MRAA_ADLINK_RUGGED_CONTROLLER_RCX_G70;
     }
     else{
         platform_type = MRAA_UNKNOWN_PLATFORM;
@@ -121,6 +124,9 @@ mraa_arm_platform()
             break;
         case MRAA_ADLINK_ROSCUBE_PICO_NPN3:
             plat = mraa_roscube_pico_npn3();
+            break;
+        case MRAA_ADLINK_RUGGED_CONTROLLER_RCX_G70:
+            plat = mraa_rcx_g70();
             break;
         default:
             plat = NULL;

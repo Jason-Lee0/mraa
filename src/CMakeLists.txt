@@ -110,6 +110,7 @@ set (mraa_LIB_ARM_SRCS_NOAUTO
   ${PROJECT_SOURCE_DIR}/src/arm/roscube_pico_npn3.c
   ${PROJECT_SOURCE_DIR}/src/arm/roscube_x_580.c
   ${PROJECT_SOURCE_DIR}/src/arm/roscube_x_58g.c
+  ${PROJECT_SOURCE_DIR}/src/arm/rugged_controller_rcx_g70.c
 )
 
 set (mraa_LIB_MIPS_SRCS_NOAUTO
