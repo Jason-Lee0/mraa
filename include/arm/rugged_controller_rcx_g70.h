@@ -13,7 +13,7 @@ extern "C" {
 #include "mraa_internal.h"
 
 // +1 as pins are "1 indexed"
-#define MRAA_RCXG70_PINCOUNT    (29 + 1)
+#define MRAA_RCXG70_PINCOUNT    (33 + 1)
 
 mraa_board_t*
 mraa_rcx_g70();

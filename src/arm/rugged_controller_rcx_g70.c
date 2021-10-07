@@ -161,6 +161,10 @@ mraa_board_t* mraa_rcx_g70()
     mraa_roscube_set_pininfo(b, 27, "FPGA_TDO",    (mraa_pincapabilities_t){ 1, 1, 0, 1, 0, 0, 0, 0 }, 423);
     mraa_roscube_set_pininfo(b, 28, "FPGA_TMS",    (mraa_pincapabilities_t){ 1, 1, 0, 1, 0, 0, 0, 0 }, 412);
     mraa_roscube_set_pininfo(b, 29, "FPGA_TCK",    (mraa_pincapabilities_t){ 1, 1, 0, 1, 0, 0, 0, 0 }, 417);
+    mraa_roscube_set_pininfo(b, 30, "FPGA_TRIG1",     (mraa_pincapabilities_t){ 1, 1, 0, 0, 0, 0, 0, 0 }, 408);
+    mraa_roscube_set_pininfo(b, 31, "FPGA_TRIG2",     (mraa_pincapabilities_t){ 1, 1, 0, 0, 0, 0, 0, 0 }, 350);
+    mraa_roscube_set_pininfo(b, 32, "FPGA_TRIG3",     (mraa_pincapabilities_t){ 1, 1, 0, 0, 0, 0, 0, 0 }, 446);
+    mraa_roscube_set_pininfo(b, 33, "FPGA_TRIG4",     (mraa_pincapabilities_t){ 1, 1, 0, 0, 0, 0, 0, 0 }, 445);
    
     b->uart_dev_count = MRAA_RCXG70_UARTCOUNT;
     b->uart_dev[0].index = 0;
