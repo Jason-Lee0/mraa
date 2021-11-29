@@ -141,8 +141,8 @@ mraa_board_t* mraa_rcx_g70()
     mraa_roscube_set_pininfo(b, 7,  "ISO_DO0",     (mraa_pincapabilities_t){ 1, 1, 0, 0, 0, 0, 0, 0 }, 351);
     mraa_roscube_set_pininfo(b, 8,  "ISO_DO1",     (mraa_pincapabilities_t){ 1, 1, 0, 0, 0, 0, 0, 0 }, 352);
     mraa_roscube_set_pininfo(b, 9,  "SYNC_PPS",    (mraa_pincapabilities_t){ 1, 1, 0, 0, 0, 0, 0, 0 }, 444);
-    mraa_roscube_set_pininfo(b, 10, "SYNC_OUT",    (mraa_pincapabilities_t){ 1, 1, 0, 0, 0, 0, 0, 0 }, 434);
-    mraa_roscube_set_pininfo(b, 11, "SYNC_IN",     (mraa_pincapabilities_t){ 1, 1, 0, 0, 0, 0, 0, 0 }, 353);
+    mraa_roscube_set_pininfo(b, 10, "SYNC_OUT",    (mraa_pincapabilities_t){ 1, 1, 0, 0, 0, 0, 0, 0 }, 353);
+    mraa_roscube_set_pininfo(b, 11, "SYNC_IN",     (mraa_pincapabilities_t){ 1, 1, 0, 0, 0, 0, 0, 0 }, 434);
     mraa_roscube_set_pininfo(b, 12, "SPI_CLK",     (mraa_pincapabilities_t){ 1, 0, 0, 0, 1, 0, 0, 0 }, -1);
     mraa_roscube_set_pininfo(b, 13, "SPI_CS",      (mraa_pincapabilities_t){ 1, 0, 0, 0, 1, 0, 0, 0 }, -1);
     mraa_roscube_set_pininfo(b, 14, "SPI_MISO",    (mraa_pincapabilities_t){ 1, 0, 0, 0, 1, 0, 0, 0 }, -1);
