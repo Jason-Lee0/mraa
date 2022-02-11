@@ -117,12 +117,15 @@ message (STATUS "INFO - libmraa Version ${VERSION}")
 message (STATUS "INFO - cmake Version ${CMAKE_MAJOR_VERSION}.${CMAKE_MINOR_VERSION}.${CMAKE_PATCH_VERSION}")
 
 #parse the version information into pieces.
-string (REGEX REPLACE "^v([0-9]+)\\..*" "\\1" VERSION_MAJOR "${VERSION}")
-string (REGEX REPLACE "^v[0-9]+\\.([0-9]+).*" "\\1" VERSION_MINOR "${VERSION}")
-string (REGEX REPLACE "^v[0-9]+\\.[0-9]+\\.([0-9]+).*" "\\1" VERSION_PATCH "${VERSION}")
-string (REGEX REPLACE "^v[0-9]+\\.[0-9]+\\.[0-9]+\\-([0-9]+).*" "\\1" VERSION_COMMIT "${VERSION}")
-string (REGEX REPLACE "^v[0-9]+\\.[0-9]+\\.[0-9]+-[0-9]+\\-(.*)" "\\1" VERSION_SHA1 "${VERSION}")
+string (REGEX REPLACE "^([0-9]+)\\..*" "\\1" VERSION_MAJOR "${VERSION}")
+string (REGEX REPLACE "^[0-9]+\\.([0-9]+).*" "\\1" VERSION_MINOR "${VERSION}")
+string (REGEX REPLACE "^[0-9]+\\.[0-9]+\\.([0-9]+).*" "\\1" VERSION_PATCH "${VERSION}")
+string (REGEX REPLACE "^[0-9]+\\.[0-9]+\\.[0-9]+\\-([0-9]+).*" "\\1" VERSION_COMMIT "${VERSION}")
+string (REGEX REPLACE "^[0-9]+\\.[0-9]+\\.[0-9]+-[0-9]+\\-(.*)" "\\1" VERSION_SHA1 "${VERSION}")
 set (VERSION_SHORT "${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}")
+message (STATUS "INFO - libmraa Version Major ${VERSION_MAJOR}")
+message (STATUS "INFO - libmraa Version Minor ${VERSION_MINOR}")
+message (STATUS "INFO - libmraa Version Patch ${VERSION_PATCH}")
 
 if ("${VERSION_COMMIT}" MATCHES "^v.*")
   set (VERSION_COMMIT "")
@@ -225,7 +228,6 @@ SET(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
 # Add ADLINKE_CHANGELOG to install path
 install (FILES ${PROJECT_SOURCE_DIR}/ADLINK_CHANGELOG DESTINATION .)
 install (FILES ${PROJECT_SOURCE_DIR}/99-roscube-device.rules DESTINATION "/etc/udev/rules.d")
-
 
 
 add_subdirectory (src)
