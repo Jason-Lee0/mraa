@@ -67,6 +67,9 @@ main(int argc, char *argv[])
         return EXIT_FAILURE;
     }
 
+    /* Wait for the GPIO to initialize*/
+    sleep(1);
+
     /* set GPIO to output */
     status = mraa_gpio_dir(gpio_1, MRAA_GPIO_OUT);
     if (status != MRAA_SUCCESS) {

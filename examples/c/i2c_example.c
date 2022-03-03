@@ -36,14 +36,17 @@ i2c_read_word(mraa_i2c_context dev, uint8_t command)
 }
 
 int
-main(void)
+main(int argc, char *argv[])
 {
     mraa_result_t status = MRAA_SUCCESS;
     uint8_t data;
-    int message = 2 ;
+    int message = 2;
     int addr = 0x00;
     int msg ;
     mraa_i2c_context i2c;
+    int i2c_bus_num = (argc >= 2)?atoi(argv[1]):I2C_BUS;
+    int i2c_dev_addr = (argc >= 3)?strtol(argv[2], NULL, 16):ADDR_1;
+    fprintf(stderr, "We'll operate on i2c-bus %d, device address 0x%02x\n", i2c_bus_num, i2c_dev_addr);
 
     /* install signal handler */
     signal(SIGINT, sig_handler);
@@ -53,7 +56,7 @@ main(void)
 
     //! [Interesting]
     /* initialize I2C bus */
-    i2c = mraa_i2c_init(I2C_BUS);
+    i2c = mraa_i2c_init(i2c_bus_num);
     if (i2c == NULL) {
         fprintf(stderr, "Failed to initialize I2C\n");
         mraa_deinit();
@@ -61,21 +64,21 @@ main(void)
     }
 
     /* set slave address */
-    status = mraa_i2c_address(i2c, ADDR_1);
+    status = mraa_i2c_address(i2c, i2c_dev_addr);
     if (status != MRAA_SUCCESS) {
         goto err_exit;
     }
 
     while (flag) {
-        mraa_i2c_write_byte_data(i2c,message,addr);
+        mraa_i2c_write_byte_data(i2c, message, addr);
         sleep(1);
-        msg = mraa_i2c_read_byte_data(i2c,addr);
+        msg = mraa_i2c_read_byte_data(i2c, addr);
 
-        fprintf(stdout, "massage send to %d is %d\n", addr, message );
-        fprintf(stdout, "message read from %d is %d\n\n", addr,msg);
+        fprintf(stdout, "massage write to 0x%02x is 0x%02x\n", addr, message );
+        fprintf(stdout, "message read from 0x%02x is 0x%02x\n\n", addr, msg);
 
-        message +=3;
-        addr +=1;
+        message += 3;
+        addr += 1;
         if (addr== 0xff+1){
             addr = 0x00;
         }
