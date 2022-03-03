@@ -12,12 +12,12 @@ import time
 import sys
 
 # serial port
-port = "/dev/ttyACM0"
+uart_port = 0 if len(sys.argv) < 2 else int(sys.argv[1])
 
 data = 'Hello Mraa!'
 
 # initialise UART
-uart = mraa.Uart(port)
+uart = mraa.Uart(uart_port)
 
 # send data through UART
 uart.write(bytearray(data, 'utf-8'))

@@ -11,28 +11,31 @@
 
 import mraa
 import time
+import sys
 
-# initialise user1 led
-led_1 = mraa.Led("user1")
+led_num = 0 if len(sys.argv) < 2 else int(sys.argv[1])
+led_val = 0 if len(sys.argv) < 3 else int(sys.argv[2])
+
+# initialise LED
+led_1 = mraa.Led(led_num)
 
 # read maximum brightness
 val = led_1.readMaxBrightness()
 
-print("maximum brightness value for user1 led is: %d" % val);
-
 # turn led on/off depending on read max_brightness value
-if (val >= 1):
-    val = 0
+if val >= 1:
+    print("maximum brightness value for LED is: %d" % val)
 # never reached mostly
 else:
-    val = 1
+    print("readMaxBrightness is not supported")
 
 # set LED brightness
-led_1.setBrightness(val)
+led_1.setBrightness(led_val)
 
-# sleep for 5 seconds
-time.sleep(5)
+# sleep for 1 seconds
+time.sleep(1)
 
-led_1.trigger("heartbeat")
-
-print("led trigger set to: heartbeat")
+if led_1.trigger("heartbeat") == 0:
+    print("led trigger set to: heartbeat")
+else:
+    print("Setting LED to heartbeat is not supported")

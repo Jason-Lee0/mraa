@@ -6,7 +6,7 @@
  *
  * SPDX-License-Identifier: MIT
  *
- * Example usage: Toggles GPIO's 23 and 24 recursively. Press Ctrl+C to exit
+ * Example usage: Toggles two GPIO pins repeatedly. Press Ctrl+C to exit
  *
  */
 

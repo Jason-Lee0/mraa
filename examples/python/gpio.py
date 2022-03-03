@@ -5,21 +5,25 @@
 #
 # SPDX-License-Identifier: MIT
 #
-# Example Usage: Toggles GPIO 23 and 24 continuously in an alternative pattern
+# Example Usage: Toggles two GPIO pins continuously in an alternative pattern
 
 import mraa
 import time
+import sys
 
-# initialise gpio 23
-gpio_1 = mraa.Gpio(23)
+gpio_num1 = 7 if len(sys.argv) < 2 else int(sys.argv[1])
+gpio_num2 = 8 if len(sys.argv) < 3 else int(sys.argv[2])
 
-# initialise gpio 24
-gpio_2 = mraa.Gpio(24)
+# initialise gpio 1
+gpio_1 = mraa.Gpio(gpio_num1)
 
-# set gpio 23 to output
+# initialise gpio 2
+gpio_2 = mraa.Gpio(gpio_num2)
+
+# set gpio 1 to output
 gpio_1.dir(mraa.DIR_OUT)
 
-# set gpio 24 to output
+# set gpio 2 to output
 gpio_2.dir(mraa.DIR_OUT)
 
 # toggle both gpio's
