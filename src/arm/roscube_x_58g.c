@@ -1,4 +1,4 @@
- /*
+/*
  * Author: Dan O'Donovan <dan@emutex.com>
  * Author: Santhanakumar A <santhanakumar.a@adlinktech.com>
  * Author: Chester Tseng <chester.tseng@adlinktech.com>
@@ -6,8 +6,7 @@
  * Copyright (c) 2019 ADLINK Technology Inc.
  * Copyright (c) 2021 ADLINK Technology Inc.
  * SPDX-License-Identifier: MIT
-
-*/
+ */
 
 #include <ctype.h>
 #include <errno.h>

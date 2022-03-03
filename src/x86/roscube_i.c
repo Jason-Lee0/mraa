@@ -1,11 +1,12 @@
- /*
+/*
  * Author: Dan O'Donovan <dan@emutex.com>
  * Author: Santhanakumar A <santhanakumar.a@adlinktech.com>
+ * Author: ChenYing Kuo <chenying.kuo@adlinktech.com>
 
  * Copyright (c) 2019 ADLINK Technology Inc.
+ * Copyright (c) 2021 ADLINK Technology Inc.
  * SPDX-License-Identifier: MIT
-
-*/
+ */
 
 #include <ctype.h>
 #include <errno.h>
@@ -219,7 +220,6 @@ mraa_result_t rqi_led_check_bright(int index, int *val)
     return MRAA_SUCCESS;
 }
 
-
 mraa_board_t* mraa_roscube_i()
 {
     int i, fd, i2c_bus_num;
@@ -258,11 +258,7 @@ mraa_board_t* mraa_roscube_i()
     b->adv_func->led_set_close = rqi_led_set_close;
     b->adv_func->led_check_bright = rqi_led_check_bright;
 
-
-
     syslog(LOG_NOTICE, "ROSCubeI: base1 %d base2 %d\n", base1, base2);
-
-
 
     mraa_roscube_set_pininfo(b, 1,  "CN_DI0",            (mraa_pincapabilities_t){  1, 1, 0, 0, 0, 0, 0, 0 }, base1 + 0);
     mraa_roscube_set_pininfo(b, 2,  "CN_DI1",            (mraa_pincapabilities_t){  1, 1, 0, 0, 0, 0, 0, 0 }, base1 + 1);
@@ -315,8 +311,6 @@ mraa_board_t* mraa_roscube_i()
     mraa_roscube_set_pininfo(b, 49, "GND",               (mraa_pincapabilities_t){ -1, 0, 0, 0, 0, 0, 0, 0 }, -1);
     mraa_roscube_set_pininfo(b, 50, "GND",               (mraa_pincapabilities_t){ -1, 0, 0, 0, 0, 0, 0, 0 }, -1);
     
-    
-    
     b->uart_dev_count = MRAA_ROSCUBE_UARTCOUNT;
     for (int i = 0; i < MRAA_ROSCUBE_UARTCOUNT; i++)
         mraa_roscube_init_uart(b, i);
@@ -342,8 +336,6 @@ mraa_board_t* mraa_roscube_i()
         mraa_roscube_get_pin_index(b, "CON_I2C1_SDA", (int*) &(b->i2c_bus[1].scl));
         b->i2c_bus_count++;
     }
-
-
 
     return b;
 
