@@ -56,6 +56,8 @@ jobs:
         run: echo "RELEASE_VERSION=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
       - name:
         run: |
+          sudo apt-get update -q -y
+          sudo apt-get install -q -y git build-essential swig3.0 python3-dev libnode-dev cmake libjson-c-dev curl pkg-config
           echo ${{env.RELEASE_VERSION}}
           cmake -B/tmp/build -H. -DBUILDSWIGNODE=OFF -DCMAKE_INSTALL_PREFIX=/opt/adlink/neuron-sdk/neuron-library/
           cmake --build /tmp/build --target package
