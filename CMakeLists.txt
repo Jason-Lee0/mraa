@@ -228,7 +228,16 @@ SET(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
 # Add ADLINKE_CHANGELOG to install path
 install (FILES ${PROJECT_SOURCE_DIR}/ADLINK_CHANGELOG DESTINATION .)
 install (FILES ${PROJECT_SOURCE_DIR}/99-roscube-device.rules DESTINATION "/etc/udev/rules.d")
-
+# Set Python pth
+find_package (Python COMPONENTS Interpreter Development QUIET)
+if (NOT Python_FOUND)
+  SET(Python_VERSION_MAJOR 3)
+  SET(Python_VERSION_MINOR 6)
+  message("There is no Python package, so set the Python version directly")
+endif ()
+message("Python version: ${Python_VERSION_MAJOR}.${Python_VERSION_MINOR}")
+file (WRITE ${CMAKE_CURRENT_BINARY_DIR}/neuron-library.ptn "/opt/adlink/neuron-sdk/neuron-library/lib/python${Python_VERSION_MAJOR}.${Python_VERSION_MINOR}/dist-packages/")
+install (FILES ${CMAKE_CURRENT_BINARY_DIR}/neuron-library.ptn DESTINATION "/usr/local/lib/python${Python_VERSION_MAJOR}.${Python_VERSION_MINOR}/dist-packages")
 
 add_subdirectory (src)
 if (ENABLEEXAMPLES)

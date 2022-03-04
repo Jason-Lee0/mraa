@@ -1,13 +1,11 @@
 Neuron Library - Peripheral API Library for ROScube
 ===================================================
 
-Neuron Library is the API library for ADLINK products, such as ROScube-I and
-ROScube-X. Neuron Library provides a common API of C++ bindings to Python to
-interface with the peripheral IO of the controller. With a structured and same
-API where port index matches the platform that you are on, it's easier for
-developers and sensor manufacturers to map their sensors & actuators on top
-of supported hardware and to allow control of low level communication protocol
-by high level languages & constructs.
+Neuron Library is the API library for ADLINK products, such as ROScube-I and ROScube-X.
+Neuron Library provides a common API of C++ bindings to Python to interface with the peripheral IO of the controller. 
+With a structured and same API where port index matches the platform that you are on,
+it's easier for developers and sensor manufacturers to map their sensors & actuators on top of supported hardware
+and to allow control of low level communication protocol by high level languages & constructs.
 
 Supported Hardware
 ==================
@@ -30,12 +28,31 @@ To use API of Neuron library with ROS 2, please check examples from [here](https
 
 Build
 =====
+
+* Install necessary packages
+
 ```bash
-sudo apt-get install git build-essential swig3.0 python-dev nodejs-dev cmake libjson-c-dev
-cmake -Bbuild -H. -DBUILDSWIGNODE=OFF
-cmake --build build
+# Ubuntu 18.04
+sudo apt-get install git build-essential swig3.0 python3-dev nodejs-dev cmake libjson-c-dev
+# Ubuntu 20.04
+sudo apt-get install git build-essential swig3.0 python3-dev libnode-dev cmake libjson-c-dev
 ```
-The build result will be under /build.
+
+* Get the code
+
+```bash
+git clone https://github.com/Adlink-ROS/mraa.git
+cd mraa
+```
+
+* Build the Debian package
+
+```bash
+cmake -Bbuild -H. -DBUILDSWIGNODE=OFF -DCMAKE_INSTALL_PREFIX=/opt/adlink/neuron-sdk/neuron-library/
+cmake --build build --target package
+```
+
+The deb package will be under /build.
 
 API Documentation
 =================
