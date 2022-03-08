@@ -47,7 +47,7 @@ jobs:
             fi
             rm -rf build
 
-  build-neuron-library-arm64-1804:
+  build-neuron-library-arm64-2004:
     runs-on: [self-hosted, Linux, X64]
     steps:
       - name: Checkout Branch
