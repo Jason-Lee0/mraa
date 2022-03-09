@@ -34,10 +34,12 @@ jobs:
             cmake -B/tmp/build -H. -DBUILDSWIGNODE=OFF -DCMAKE_INSTALL_PREFIX=/opt/adlink/neuron-sdk/neuron-library/
             cmake --build /tmp/build --target package
             if [ -f "build/neuron-library_${{env.RELEASE_VERSION}}_arm64.deb" ]; then
+              echo "\nRename deb file\n"
+              mv build/neuron-library_${{env.RELEASE_VERSION}}_arm64.deb build/neuron-library_${{env.RELEASE_VERSION}}_bionic_arm64.deb
               echo "\nRemove existing neuron-library deb files\n"
               curl -X DELETE http://website:10080/api/files/neuron-library
               echo "\nAdding package neuron-library debian package to local storage\n"
-              curl -X POST -F file=@build/neuron-library_${{env.RELEASE_VERSION}}_arm64.deb http://website:10080/api/files/neuron-library
+              curl -X POST -F file=@build/neuron-library_${{env.RELEASE_VERSION}}_bionic_arm64.deb http://website:10080/api/files/neuron-library
               sleep 0.5
               echo "Posting folder neuron-library to repo bionic-common"
               curl -X POST http://website:10080/api/repos/bionic-common/file/neuron-library?forceReplace=1
@@ -70,10 +72,12 @@ jobs:
             cmake -B/tmp/build -H. -DBUILDSWIGNODE=OFF -DCMAKE_INSTALL_PREFIX=/opt/adlink/neuron-sdk/neuron-library/
             cmake --build /tmp/build --target package
             if [ -f "build/neuron-library_${{env.RELEASE_VERSION}}_arm64.deb" ]; then
+              echo "\nRename deb file\n"
+              mv build/neuron-library_${{env.RELEASE_VERSION}}_arm64.deb build/neuron-library_${{env.RELEASE_VERSION}}_focal_arm64.deb
               echo "\nRemove existing neuron-library deb files\n"
               curl -X DELETE http://website:10080/api/files/neuron-library
               echo "\nAdding package neuron-library debian package to local storage\n"
-              curl -X POST -F file=@build/neuron-library_${{env.RELEASE_VERSION}}_arm64.deb http://website:10080/api/files/neuron-library
+              curl -X POST -F file=@build/neuron-library_${{env.RELEASE_VERSION}}_focal_arm64.deb http://website:10080/api/files/neuron-library
               sleep 0.5
               echo "Posting folder neuron-library to repo focal-common"
               curl -X POST http://website:10080/api/repos/focal-common/file/neuron-library?forceReplace=1
@@ -98,10 +102,12 @@ jobs:
           cmake -B/tmp/build -H. -DBUILDSWIGNODE=OFF -DCMAKE_INSTALL_PREFIX=/opt/adlink/neuron-sdk/neuron-library/
           cmake --build /tmp/build --target package
           if [ -f "build/neuron-library_${{env.RELEASE_VERSION}}_amd64.deb" ]; then
+            echo "\nRename deb file\n"
+            mv build/neuron-library_${{env.RELEASE_VERSION}}_amd64.deb build/neuron-library_${{env.RELEASE_VERSION}}_focal_amd64.deb
             echo "\nRemove existing neuron-library debian package\n"
             curl -X DELETE http://website:10080/api/files/neuron-library
             echo "\nAdding package neuron-library debian package to local storage\n"
-            curl -X POST -F file=@build/neuron-library_${{env.RELEASE_VERSION}}_amd64.deb http://website:10080/api/files/neuron-library
+            curl -X POST -F file=@build/neuron-library_${{env.RELEASE_VERSION}}_focal_amd64.deb http://website:10080/api/files/neuron-library
             sleep 0.5
             echo "Posting folder neuron-library to repo focal-common"
             curl -X POST http://website:10080/api/repos/focal-common/file/neuron-library?forceReplace=1
