@@ -43,3 +43,12 @@ I2C_BUS means the supported I2C bus on ROScube platform, which starts from 0.
 # It'll set all the registers of the device which is located on bus 0 and address 0x50
 ./i2c_example 0 0x50
 ```
+
+# PWM
+`./pwm` can set the value to period of pwm.
+
+```bash
+# For example, your pin of pwm is 22, and you want to set the period of pwm to 200us
+./pwm 22 200
+# To exit, using ctrl + c
+```

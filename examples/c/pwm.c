@@ -18,7 +18,7 @@
 #include "mraa/pwm.h"
 
 /* PWM declaration */
-#define PWM 35
+#define PWM_PIN 22
 
 /* PWM period in us */
 #define PWM_FREQ 200
@@ -35,10 +35,14 @@ sig_handler(int signum)
 }
 
 int
-main(void)
+main(int argc, char *argv[])
 {
     mraa_result_t status = MRAA_SUCCESS;
     mraa_pwm_context pwm;
+    int pwm_pin, pwm_freq, pwm_duty;
+    pwm_pin = (argc >= 2)?atoi(argv[1]):PWM_PIN;
+    pwm_freq = (argc >= 3)?atoi(argv[2]):PWM_FREQ;
+    printf("Will set PWM to %d and period to %d us\n", pwm_pin, pwm_freq);
     float value = 0.0f;
     float output;
     /* install signal handler */
@@ -47,22 +51,37 @@ main(void)
     mraa_init();
 
     //! [Interesting]
-    pwm = mraa_pwm_init(PWM);
+    pwm = mraa_pwm_init(pwm_pin);
+    usleep(50000);
     if (pwm == NULL) {
         fprintf(stderr, "Failed to initialize PWM\n");
         mraa_deinit();
         return EXIT_FAILURE;
     }
+    
+    /* Set PWM duty cyle */
+    status = mraa_pwm_write(pwm, value);
+    usleep(50000);
+    if (status != MRAA_SUCCESS) {
+        printf("Failed to setting duty\n");
+        goto err_exit;
+        
+    }
 
     /* set PWM period */
-    status = mraa_pwm_period_us(pwm, PWM_FREQ);
+    status = mraa_pwm_period_us(pwm, pwm_freq);
+    usleep(50000);
     if (status != MRAA_SUCCESS) {
+        printf("Failed to setting period\n");
         goto err_exit;
+        
     }
 
     /* enable PWM */
     status = mraa_pwm_enable(pwm, 1);
+    usleep(50000);
     if (status != MRAA_SUCCESS) {
+        printf("Failed to setting enable\n");
         goto err_exit;
     }
 
@@ -71,11 +90,11 @@ main(void)
 
         /* write PWM duty cyle */
         status = mraa_pwm_write(pwm, value);
+        usleep(50000);
         if (status != MRAA_SUCCESS) {
+            printf("Failed to setting value\n");
             goto err_exit;
         }
-
-        usleep(50000);
 
         if (value >= 1.0f) {
             value = 0.0f;
