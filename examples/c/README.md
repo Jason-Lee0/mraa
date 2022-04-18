@@ -45,10 +45,33 @@ I2C_BUS means the supported I2C bus on ROScube platform, which starts from 0.
 ```
 
 # PWM
-`./pwm` can set the value to period of pwm.
+`./pwm <PWM_PIN> <PWM_FREQ>` can set the value to period of pwm.
 
 ```bash
 # For example, your pin of pwm is 22, and you want to set the period of pwm to 200us
 ./pwm 22 200
 # To exit, using ctrl + c
+```
+
+# SPI 
+`./spi <SPI_BUS> <SPI_FREQ>` can set the value to spi.
+
+Take MAX7219 chip with LED Matrix as example.  
+Display set of patterns on MAX7219 repeately.
+
+Note that we are using `/dev/spidev0.0`.
+
+```bash
+# For example, your spi_device is 0, and you want to set the speed to 100000 hz.
+./spi 0 100000
+# Press Ctrl+C to exit
+```
+
+# GPIO ISR
+`./gpio_advanced.c <PIN>` can configure GPIO pin for interruption.
+
+```bash
+# For example, configure Pin 5 for interruption.
+./gpio_advanced.c 
+# Press Ctrl+C to exit.
 ```

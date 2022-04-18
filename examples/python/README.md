@@ -53,3 +53,27 @@ python3 i2c.py 0 0x50
 python3 pwm.py 22 200
 # To exit, using ctrl + c
 ```
+
+# SPI
+
+`python3 spi.py <SPI_Num> <SPI_Speed>` can set the value to the SPI.
+
+Take MAX7219 chip with LED Matrix as example.  
+Display set of patterns on MAX7219 repeately.
+
+Note that we are using `/dev/spidev0.0`.
+
+```bash
+# For example, your spi_device is 0, and you want to set the speed to 100000 hz.
+python3 spi.py 0 100000
+# Press Ctrl+C to exit
+```
+
+# GPIO ISR
+`python3 spi.py <GPIO_PIN>` can triggers ISR upon GPIO state change.
+
+```bash
+# For example, configure Pin 5 for interruption.
+python3 gpio_advanced.py 5.
+# Press ENTER to stop
+```
