@@ -58,8 +58,9 @@ The deb package will be under /build.
 API Documentation
 =================
 
-<a href="http://c.mraa.io"><img src="http://iotdk.intel.com/misc/logos/c++.png"/></a>
-<a href="http://py.mraa.io"><img src="http://iotdk.intel.com/misc/logos/python.png"/></a>
+<a href="https://iotdk.intel.com/docs/master/mraa/"><img src="http://iotdk.intel.com/misc/logos/c++.png"/></a>
+
+<a href="https://iotdk.intel.com/docs/master/mraa/python/"><img src="http://iotdk.intel.com/misc/logos/python.png"/></a>
 
 Contact Us
 ==========
