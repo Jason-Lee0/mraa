@@ -30,7 +30,9 @@
 #include <sys/mman.h>
 #include <sys/stat.h>
 #include <sys/time.h>
+#include <sys/utsname.h>
 #include <linux/i2c-dev.h>
+#include <linux/version.h>
 
 #include "common.h"
 #include "gpio.h"
@@ -48,13 +50,45 @@
 #define MAX_SIZE 64
 #define POLL_TIMEOUT
 
-static volatile int base1, base2, _fd;
-#define base1  220
-#define base2 253
-#define led_base 276
+static volatile int _fd;
 static mraa_gpio_context gpio;
 static char* uart_name[MRAA_ROSCUBE_UARTCOUNT] = {"COM1", "COM2"};
 static char* uart_path[MRAA_ROSCUBE_UARTCOUNT] = {"/dev/ttyS0", "/dev/ttyS1"};
+
+static void get_gpio_base(int *base1, int *base2, int *led_base)
+{
+    struct utsname buffer;
+    char *p;
+    long ver[16];
+    int i=0;
+
+    errno = 0;
+    if (uname(&buffer) != 0) {
+        perror("uname");
+        exit(EXIT_FAILURE);
+    }
+
+    p = buffer.release;
+    while (*p) {
+        if (isdigit(*p)) {
+            ver[i] = strtol(p, &p, 10);
+            i++;
+        } else {
+            p++;
+        }
+    }
+
+    long ver_hex = (ver[0] << 16) + (ver[1] << 8) + ver[2];
+    if (ver_hex < KERNEL_VERSION(5,15,0)) {
+            *base1 = 220;
+            *base2 = 253;
+            *led_base = 276;
+    } else {
+            *base1 = 732;
+            *base2 = 765;
+            *led_base = 788;
+    }
+}
 
 // utility function to setup pin mapping of boards
 static mraa_result_t mraa_roscube_set_pininfo(mraa_board_t* board, int mraa_index, char* name,
@@ -113,6 +147,8 @@ static mraa_result_t mraa_roscube_init_uart(mraa_board_t* board, int index)
 
 int index_mapping(int index)
 {
+    int base1, base2, led_base;
+    get_gpio_base(&base1, &base2, &led_base);
     return index + led_base;
 }
 
@@ -258,6 +294,8 @@ mraa_board_t* mraa_roscube_i()
     b->adv_func->led_set_close = rqi_led_set_close;
     b->adv_func->led_check_bright = rqi_led_check_bright;
 
+    int base1, base2, led_base;
+    get_gpio_base(&base1, &base2, &led_base);
     syslog(LOG_NOTICE, "ROSCubeI: base1 %d base2 %d\n", base1, base2);
 
     mraa_roscube_set_pininfo(b, 1,  "CN_DI0",            (mraa_pincapabilities_t){  1, 1, 0, 0, 0, 0, 0, 0 }, base1 + 0);
