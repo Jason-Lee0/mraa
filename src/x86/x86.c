@@ -123,7 +123,8 @@ mraa_x86_platform()
         if (file_hold != NULL) {
             if (getline(&line, &len, file_hold) != -1) {
                 line[strcspn(line, "\r\n")] = 0;
-                if (strncmp(line, "ROScube-I", strlen("ROScube-I") + 1) == 0 ) {
+                if (strncmp(line, "ROScube-I", strlen("ROScube-I")) == 0 ) {
+                    // includes ROScube-I, ROScube-I ET
                     platform_type = MRAA_ADLINK_ROSCUBE_I;
                     plat = mraa_roscube_i();
                 } else {

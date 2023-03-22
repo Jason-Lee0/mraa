@@ -62,12 +62,10 @@ API Documentation
 
 <a href="https://iotdk.intel.com/docs/master/mraa/python/"><img src="http://iotdk.intel.com/misc/logos/python.png"/></a>
 
-Contact Us
-==========
 
-To ask questions either file issues in github or send emails to Adlink service@adlinktech.com . 
-
-Changelog
+Bump Version
 =========
 
-Version changelog [here](ADLINK_CHANGELOG).
+- Version changelog [here](ADLINK_CHANGELOG).
+- Version number: `CPACK_PACKAGE_VERSION` in CMakeLists.txt.
+- git tag -a <new_versino>

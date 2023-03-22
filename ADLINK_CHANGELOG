@@ -1,6 +1,13 @@
 
 Changelog for Neuron Library
 ============================
+v1.3.13
+-------------------
+1. Bugfix: Fix mraa mapping issue for product "ROScube-I ET".
+
+v1.3.12
+-------------------
+1. Bugfix: Fix GPIO mapping error in ROScube-I when kernel >= 5.15.0.
 
 v1.3.3
 -------------------
