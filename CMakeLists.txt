@@ -262,7 +262,7 @@ endif()
 set(CPACK_DEBIAN_PACKAGE_CONTROL_EXTRA "${CMAKE_CURRENT_SOURCE_DIR}/postinst;")
 set(CPACK_GENERATOR "DEB")
 ## Set the package version
-set(CPACK_PACKAGE_VERSION "1.3.13")
+set(CPACK_PACKAGE_VERSION "1.3.14")
 # Set the package name
 set(CPACK_PACKAGE_NAME "neuron-library")
 # Set the package file format

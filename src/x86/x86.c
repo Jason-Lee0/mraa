@@ -120,10 +120,11 @@ mraa_x86_platform()
     }
     if (platform_type == MRAA_UNKNOWN_PLATFORM){
         FILE* file_hold = fopen("/sys/devices/virtual/dmi/id/product_name", "r");
+        char* platform_name = NULL;
         if (file_hold != NULL) {
-            if (getline(&line, &len, file_hold) != -1) {
-                line[strcspn(line, "\r\n")] = 0;
-                if (strncmp(line, "ROScube-I", strlen("ROScube-I")) == 0 ) {
+            if (getline(&platform_name, &len, file_hold) != -1) {
+                platform_name[strcspn(platform_name, "\r\n")] = 0;
+                if (strncmp(platform_name, "ROScube-I", strlen("ROScube-I")) == 0 ) {
                     // includes ROScube-I, ROScube-I ET
                     platform_type = MRAA_ADLINK_ROSCUBE_I;
                     plat = mraa_roscube_i();
@@ -131,7 +132,7 @@ mraa_x86_platform()
                     syslog(LOG_ERR, "Platform not supported, not initialising");
                     platform_type = MRAA_UNKNOWN_PLATFORM;
                 }
-                free(line);
+                free(platform_name);
             }
             fclose(file_hold);
         }
